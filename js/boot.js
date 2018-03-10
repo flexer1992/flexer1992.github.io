@@ -45,7 +45,9 @@ BasicGame.Boot.prototype = {
             this.scale.setResizeCallback(this.gameResized, this);
             // Set screen size automatically based on the scaleMode. This is only
             // needed if ScaleMode is not set to RESIZE.
-            this.scale.setScreenSize(true);
+           // this.scale.setScreenSize(true);
+           //
+           // this.scale.SetSce
             // Re-calculate scale mode and update screen size. This only applies if
             // ScaleMode is not set to RESIZE.
             this.scale.refresh();
