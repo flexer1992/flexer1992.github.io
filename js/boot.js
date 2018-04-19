@@ -4,17 +4,14 @@ BasicGame.Boot = function (game) {
 
 BasicGame.Boot.prototype = {
 
+
+
     init: function () {
 
-        this.input.maxPointers = 4;
-        // Two pointers default but I think one is mousepointer
-        this.input.addPointer();  // 3rd pointer
-        this.input.addPointer();  // 4th pointer
-        this.input.addPointer();  // 5th pointer
-
-        //this.input.maxPointers = 1;
+        this.input.maxPointers = 1;
         this.stage.disableVisibilityChange = true;
         this.stage.backgroundColor = '#fff';
+
 
         if (this.game.device.desktop)
         {
@@ -51,20 +48,17 @@ BasicGame.Boot.prototype = {
             // Re-calculate scale mode and update screen size. This only applies if
             // ScaleMode is not set to RESIZE.
             this.scale.refresh();
-            /*
 
-            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-            this.scale.setMinMax(480, 260, 1024, 768);
-            this.scale.pageAlignHorizontally = true;
-            this.scale.pageAlignVertically = true;
-            this.scale.forceOrientation(true, false);
-            this.scale.setResizeCallback(this.gameResized, this);
-            this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
-            this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
-            */
+
+            // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            // this.scale.setMinMax(480, 260, 1024, 768);
+            // this.scale.pageAlignHorizontally = true;
+            // this.scale.pageAlignVertically = true;
+            // this.scale.forceOrientation(true, false);
+            // this.scale.setResizeCallback(this.gameResized, this);
+            // this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
+            // this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
-
-
 
     },
 

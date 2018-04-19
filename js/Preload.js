@@ -29,7 +29,8 @@ BasicGame.Preloader.prototype = {
         this.load.image('paddle', 'asset/rubber_paddle.png');
         this.load.image('goalRight', 'asset/blueGoal.png');
         this.load.image('goalLeft', 'asset/redGoal.png');
-        this.load.image('airhole', 'asset/hole4.png');
+        // this.load.image('airhole', 'asset/hole4.png');
+        this.load.image('airhole', 'asset/field_dot.png');
         this.load.image('players', 'asset/players.png');
         this.load.image('button1', 'asset/button1.png');
         this.load.image('button2', 'asset/button2.png');
@@ -38,11 +39,26 @@ BasicGame.Preloader.prototype = {
         this.load.image('mainMenu', 'asset/buttons.png');
 
 
+        this.load.image("newPuck", "asset/puck.png")
+        this.load.image("bitok", "asset/hockey_bat.png");
+
         //this.load.image('titlepage', 'images/title.jpg');
         //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
         //this.load.audio('titleMusic', ['audio/main_menu.mp3']);
         //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
         //	+ lots of other required assets here
+
+        // main screen loading assets block
+
+        this.load.image("button_yellow_normal", 'asset/new/mainscreen/b_new_yellow_normal.png');
+        this.load.image("button_yellow_hover", 'asset/new/mainscreen/b_new_yellow_hover.png');
+
+
+        this.load.image("button_green_normal", 'asset/new/mainscreen/b_new_green_normal.png');
+        this.load.image("button_green_hover", 'asset/new/mainscreen/b_new_green_hover.png');
+
+
+        this.load.image("new_gate", 'asset/gates.png');
 
     },
 
