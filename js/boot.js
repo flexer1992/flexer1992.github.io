@@ -12,6 +12,8 @@ BasicGame.Boot.prototype = {
         this.stage.disableVisibilityChange = true;
         this.stage.backgroundColor = '#fff';
 
+        //HACK TO PRELOAD A CUSTOM FONT
+        this.game.add.text(0, 0, "hack", {font:"1px officina_sans", fill:"#FFFFFF"});
 
         if (this.game.device.desktop)
         {

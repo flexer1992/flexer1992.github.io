@@ -16,3 +16,20 @@ Settings.BOT_EASIER = 2;  // коэффициент который дает до
 Settings.BOT_DEFFENSIVE_POSITION = 120; // защитна позиция бота
 Settings.BOT_DEFFENSIVE_VELOCITY = 3000; // фигня которая сигнализирует боту что надо перехдить в защитную позицию
 Settings.BOT_DELTA_X = 200; // дельта смещения бота по иксу от -x до x
+
+
+// для настройки колайдеров в воротах
+Settings.SHOW_GATE_COLLIDERS = true;
+Settings.GATE_COLLIDER_WIDTH = 300;
+Settings.GATE_COLLIDER_HEIGHT = 60;
+Settings.PLAYER_GATE_COLLIDER_OFFSET_Y = 10;
+Settings.ENEMY_GATE_COLLIDER_OFFSET_Y = 10;
+Settings.PLAYER_GATE_COLLIDER_OFFSET_X = 0;
+Settings.ENEMY_GATE_COLLIDER_OFFSET_X = 0;
+
+
+
+// текста тоже сюда наверное
+Settings.locale = {};
+Settings.locale.YOU_WIN = "YOU WIN!";
+Settings.locale.ENEMY_WIN = "ENEMY WIN!";

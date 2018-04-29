@@ -3,34 +3,46 @@ BasicGame.MainMenu = function (game) {
 
     //this.music = null;
     //this.playButton = null;
+    this.templateWindow = null;
+
 
 };
 
 BasicGame.MainMenu.prototype = {
 
     create: function () {
-        // Add logo to the center of the stage
-        //background to look like air hockey table
-        this.add.tileSprite(0, 0, this.world.width, this.world.height, 'airhole');
-        var tmpImg1 = this.cache.getImage('preloaderBackground');
-        var tmpImg2 = this.cache.getImage('players');
-        this.add.sprite(this.world.centerX-tmpImg1.width/2.0, 10, 'preloaderBackground');
-        this.add.sprite(this.world.centerX-tmpImg2.width/2.0, tmpImg1.height+30, 'players');
-
-
+        this.drawBackground();
         this.createPlayButton();
-        this.createRatingsButton();
-        this.createGatchaButton();
+        // this.createRatingsButton();
+        // this.createGatchaButton();
+    },
 
+    drawBackground : function()
+    {
+        var back = this.add.sprite(0,0, "main_bg");
+        back.width = this.world.width;
+        back.height = this.world.height;
+
+        //draw cloud
+        var cloudLeft = this.add.sprite(0,0,"cloud_2");
+        cloudLeft.y = this.world.height - cloudLeft.height;
+
+        var cloudright = this.add.sprite(0,0, "cloud_1");
+        cloudright.x = this.world.width - cloudright.width;
+        cloudright.y = this.world.height - cloudright.height;
+
+        // draw logo
+        var logo = this.add.sprite(0,0, "logo");
+        logo.x = (this.world.width - logo.width) * 0.5;
+        logo.y = logo.height / 2;
 
     },
 
-
     createPlayButton : function()
     {
-        this.playButton = this.add.button(this.world.centerX, this.world.centerY + 134, 'button_green_normal', this.startGame, this, 'button_green_hover', 'button_green_normal', 'button_green_hover','button_green_normal');
+        this.playButton = this.add.button(this.world.centerX, this.world.centerY + 134, 'btn_green', this.startGame, this);
         this.playButton.x -= this.playButton.width / 2;
-        var text = this.add.text(0, 0, "Play !", {font: "32px Arial", fill: "#ffffff"});
+        var text = this.add.text(0, 0, "Play!", {font: "80px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);
         text.x = this.playButton.width / 2;
         text.y = this.playButton.height / 2;
@@ -71,6 +83,8 @@ BasicGame.MainMenu.prototype = {
         this.game.numPlayers = 1;
         this.game.state.start('Game');
 
+
+        // this.ShowTemplateWindow();
     },
 
 
@@ -82,5 +96,22 @@ BasicGame.MainMenu.prototype = {
     gatchaButtonListener : function()
     {
         console.log("click gatcha button");
+    },
+
+    ShowTemplateWindow : function()
+    {
+        if(this.templateWindow != null)
+        {
+            this.templateWindow.destroy();
+        }
+
+
+        this.templateWindow = this.game.add.group();
+        var back = this.game.add.sprite(0,0, "popup_bg");
+        this.templateWindow.add(back);
+
+
+        this.templateWindow.x = this.game.width / 2 - this.templateWindow.width / 2;
+        this.templateWindow.y = this.game.height / 2 - this.templateWindow.height / 2;
     }
 };

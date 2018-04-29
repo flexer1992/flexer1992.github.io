@@ -1,8 +1,7 @@
 /* jshint browser:true */
 // create Game function in BasicGame
 BasicGame.Game = function (game) {
-
-
+    this.winPopup = null;
 };
 
 
@@ -26,38 +25,24 @@ BasicGame.Game.prototype = {
         graphics.lineStyle(4, 0xD62D20, 0.5);
 
 
-        console.log(this.world.width);
-        console.log(this.world.height);
-
-        // graphics.moveTo(this.world.width/2 + 50, this.world.height / 2);
-        // graphics.lineTo(this.world.width, this.world.height / 2);
-        // graphics.moveTo(this.world.width/2 - 50, this.world.height/2);
-        // graphics.lineTo(0, this.world.height / 2);
-
-
-
-
-        // graphics.moveTo(this.world.centerX, 100);
-        // graphics.lineTo(this.world.centerX, this.world.height/2 -50);
-        // graphics.moveTo(this.world.centerX, this.world.height/2 +50 );
-        // graphics.lineTo(this.world.centerX, this.world.height -100);
-        //
-
-        // graphics.drawCircle(this.world.centerX, this.world.centerY, 50);
-        //
-        // graphics.drawCircle(this.world.width / 2, this.world.height, 100);
-        // graphics.drawCircle(this.world.width / 2, 0, 100);
-
         // //set up goals
-        this.goalLeft = this.add.sprite(this.world.width / 2, 6, 'goalLeft');
-        this.goalRight = this.add.sprite(this.world.width / 2, this.world.height - 12,'goalRight');
+        this.goalLeft = this.add.sprite(this.world.width / 2, 0, 'new_gate1');
+        this.goalLeft.y = this.goalLeft.height / 2;
+        this.goalLeft.tint = 0xbf1f2d;
+
+        this.goalRight = this.add.sprite(this.world.width / 2, this.world.height,'new_gate');
+        this.goalRight.y = this.world.height - this.goalRight.height / 2;
+        this.goalRight.tint = 0x156cc1;
+
         //
-         this.physics.p2.enable([this.goalLeft,this.goalRight], true); //change to true to see
+         this.physics.p2.enable([this.goalLeft,this.goalRight], Settings.SHOW_GATE_COLLIDERS); //change to true to see
         //
         this.goalLeft.body.static = true;
-        this.goalLeft.body.setRectangle(100, 15, -4);
+        this.goalLeft.body.setRectangle(Settings.GATE_COLLIDER_WIDTH, Settings.GATE_COLLIDER_HEIGHT, Settings.ENEMY_GATE_COLLIDER_OFFSET_X, Settings.ENEMY_GATE_COLLIDER_OFFSET_Y);
+
+
         this.goalRight.body.static = true;
-        this.goalRight.body.setRectangle(100, 15,6);
+        this.goalRight.body.setRectangle(Settings.GATE_COLLIDER_WIDTH, Settings.GATE_COLLIDER_HEIGHT, Settings.PLAYER_GATE_COLLIDER_OFFSET_X, Settings.PLAYER_GATE_COLLIDER_OFFSET_Y);
 
 
         // отрисовка блоков с кругами
@@ -69,12 +54,6 @@ BasicGame.Game.prototype = {
         this.drawCircles(graphics, this.world.width/ 6, (this.world.height - this.world.height / 6), 80, 260);
         this.drawCircles(graphics, (this.world.width - this.world.width/ 6), (this.world.height - this.world.height / 6), 80, 260);
 
-        console.log(GameApp.SCALE_RATIO);
-
-
-
-
-
     },
 
 
@@ -82,8 +61,7 @@ BasicGame.Game.prototype = {
     drawCircles : function(graphics, x, y, radius1, radius2)
     {
         graphics.drawCircle(x,y, radius1);
-        graphics.drawCircle(x,y, radius2)
-
+        graphics.drawCircle(x,y, radius2);
     },
 
 
@@ -158,7 +136,7 @@ BasicGame.Game.prototype = {
         this.input.addMoveCallback(this.paddleMove, this);
 
         // for eject puck timer
-        this.timerTxt = this.add.text(this.world.centerY-5, 5, 'New Puck: 5', { font: "16px Arial", fill: "#3369E8", align: "center" });
+        this.timerTxt = this.add.text(this.world.centerY-5, 5, 'New Puck: 5', { font: "16px officina_sans", fill: "#3369E8", align: "center" });
         this.timerTxt.anchor.setTo(0.5, 0.5);
         this.timerTxt.visible = false;
         this.timerTxt.angle = 90;
@@ -174,11 +152,11 @@ BasicGame.Game.prototype = {
         this.scoreL = 0;
         this.scoreR = 0;
 
-        this.styleWin = { font: "16px Arial", fill: "#009925", align: "center" };
-        this.styleLose = { font: "16px Arial", fill: "#D50F25", align: "center" };
+        this.styleWin = { font: "16px officina_sans", fill: "#009925", align: "center" };
+        this.styleLose = { font: "16px officina_sans", fill: "#D50F25", align: "center" };
 
-        this.playerStyle = {font: "64px Arial", fill: "#156cc1", align: "center"};
-        this.enemyStyle = {font: "64px Arial", fill: "#bf1f2d", align: "center"};
+        this.playerStyle = {font: "64px officina_sans", fill: "#156cc1", align: "center"};
+        this.enemyStyle = {font: "64px officina_sans", fill: "#bf1f2d", align: "center"};
 
 
         this.scoreLtxt = this.add.text(this.world.width /  6 , 60, '0', this.enemyStyle); // enemy score
@@ -333,15 +311,37 @@ BasicGame.Game.prototype = {
 
             if(this.scoreL > this.scoreR)
             {
-                //TODO enemy win
-                console.log("enemy winnwe")
+                this.drawWinnerWindow(false);
             }
             else
             {
-                //TODO player win
-                console.log("player winner");
+                this.drawWinnerWindow(true);
             }
         }
+    },
+
+    drawWinnerWindow : function(isPlayer)
+    {
+
+        if(this.winPopup != null)
+        {
+            this.winPopup.destroy();
+        }
+
+        this.winPopup = this.game.add.group();
+        var bg = this.add.sprite(0,0, "popup_bg");
+        this.winPopup.add(bg);
+
+        this.titleStyle = {font: "64px officina_sans", fill: "#ffffff", align: "center"};
+
+        this.title = this.add.text(this.winPopup.width /  2 , 60, isPlayer ? Settings.locale.YOU_WIN : Settings.locale.ENEMY_WIN, this.titleStyle); // enemy score
+        this.winPopup.add(this.title);
+        this.title.x = this.winPopup.width / 2 - this.title.width / 2;
+
+
+
+        this.winPopup.x = this.world.width / 2 - this.winPopup.width / 2;
+        this.winPopup.y = this.world.height / 2 - this.winPopup.height / 2;
     },
 
 

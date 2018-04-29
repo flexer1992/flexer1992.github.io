@@ -50,15 +50,9 @@ BasicGame.Preloader.prototype = {
 
         // main screen loading assets block
 
-        this.load.image("button_yellow_normal", 'asset/new/mainscreen/b_new_yellow_normal.png');
-        this.load.image("button_yellow_hover", 'asset/new/mainscreen/b_new_yellow_hover.png');
-
-
-        this.load.image("button_green_normal", 'asset/new/mainscreen/b_new_green_normal.png');
-        this.load.image("button_green_hover", 'asset/new/mainscreen/b_new_green_hover.png');
-
 
         this.load.image("new_gate", 'asset/gates.png');
+        this.load.image("new_gate1", 'asset/gatesLeft.png');
 
         // load resources from main screen
         this.load.image("main_bg", 'asset/mainscreen/bg.jpg');
