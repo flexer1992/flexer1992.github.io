@@ -200,22 +200,19 @@ BasicGame.Game.prototype = {
         }
 
 
-
         if(this.computerHandle.body.y > this.world.centerY)
         {
-            this.computerHandle.body.y = 180;
+            this.computerHandle.body.y = Settings.DEFAULT_BOT_Y_POSITION;
             return;
         }
 
 
-
         // 1 player ai
         var deltaY;
-        var xConstraint = 80;
         var	velDist;
 
         if(this.game.numPlayers == 1){
-            if(this.puck.body.x > this.world.centerX - xConstraint && this.puck.body.x < this.world.centerX + xConstraint){
+            if(this.puck.body.x > this.world.centerX - Settings.BOT_DELTA_X && this.puck.body.x < this.world.centerX + Settings.BOT_DELTA_X){
                 this.computerHandle.body.x = this.puck.body.x;
             }
 
@@ -223,39 +220,37 @@ BasicGame.Game.prototype = {
             deltaY = this.puck.body.y - this.computerHandle.body.y;
 
 
-            if(deltaY>=0 && deltaY<70){
-                this.computerHandle.body.y = 180;  //thrust forward
-                this.computerHandle.body.x = this.puck.body.x -deltaY/4;
+            if(deltaY >= 0 && deltaY < Settings.BOT_DELTA_Y){
+                this.computerHandle.body.y = Settings.BOT_THRUST_FORWARD;  //thrust forward
+                this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
             }
-            else if(deltaY<0){
-                this.computerHandle.body.y = 120;  //thrust back
-                this.computerHandle.body.x = this.puck.body.x-deltaY/4;
+            else if(deltaY < 0){
+                this.computerHandle.body.y = Settings.BOT_THRUST_BACK;  //thrust back
+                this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
 
             }
             else
-                this.computerHandle.body.y = 180;  //thrust forward
+                this.computerHandle.body.y = Settings.BOT_THRUST_FORWARD;  //thrust forward
 
 
             // Gets the velocity distance (Magnitude)
-            velDist=	this.getDistance(this.puck.body.velocity.x, this.puck.body.velocity.y);
+            velDist = this.getDistance(this.puck.body.velocity.x, this.puck.body.velocity.y);
 
-
-
-            if(velDist> 2000)
+            if(velDist> Settings.BOT_DEFFENSIVE_VELOCITY)
             {
                 // Makes the puck go defensive
                 // If the puck is going too fast then make the computer try and defend the goal by spaztically moving side to side
-                this.computerHandle.body.y =	80; // This will make the puck more 'defensive' but will make it easier
-                this.computerHandle.body.x =	this.world.centerX + this.rnd.integerInRange(-xConstraint, xConstraint);
+                this.computerHandle.body.y = Settings.BOT_DEFFENSIVE_POSITION; // This will make the puck more 'defensive' but will make it easier
+                this.computerHandle.body.x = this.world.centerX + this.rnd.integerInRange(-Settings.BOT_DELTA_X, Settings.BOT_DELTA_X);
             }
-            if(this.puck.body.x> this.world.centerX/ 2 && this.puck.body.x< this.world.centerX*(3/4))
+            if(this.puck.body.x> this.world.centerX / 2 && this.puck.body.x < this.world.centerX / 2)
             {
                 // Flings the puck forward
                 // If the puck is going too fast, just assume and fling towards the 3 quarter mark
-                if(velDist> 2000)
-                    this.computerHandle.body.x = this.world.centerX*(3/4);
+                if(velDist> Settings.BOT_DEFFENSIVE_VELOCITY)
+                    this.computerHandle.body.x = this.world.centerX * (3/4);
                 else // Else just hit towards the puck with a margin of error
-                    this.computerHandle.body.x = this.puck.body.x-deltaY/4;
+                    this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
             }
         }
     },

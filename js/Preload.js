@@ -60,6 +60,18 @@ BasicGame.Preloader.prototype = {
 
         this.load.image("new_gate", 'asset/gates.png');
 
+        // load resources from main screen
+        this.load.image("main_bg", 'asset/mainscreen/bg.jpg');
+        this.load.image("btn_green", 'asset/mainscreen/btn_green.png');
+        this.load.image("btn_violet", 'asset/mainscreen/btn_violet.png');
+        this.load.image("btn_yellow", 'asset/mainscreen/btn_yellow.png');
+        this.load.image("cloud_1", 'asset/mainscreen/cloud_1.png');
+        this.load.image("cloud_2", 'asset/mainscreen/cloud_2.png');
+        this.load.image("icon_coin", 'asset/mainscreen/icon_coin.png');
+        this.load.image("logo", 'asset/mainscreen/logo.png');
+        this.load.image("money_bg", 'asset/mainscreen/money_bg.png');
+        this.load.image("popup_bg", 'asset/mainscreen/popup_bg.png');
+
     },
 
     create: function () {
