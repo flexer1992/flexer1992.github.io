@@ -65,6 +65,7 @@ BasicGame.Preloader.prototype = {
         this.load.image("logo", 'asset/mainscreen/logo.png');
         this.load.image("money_bg", 'asset/mainscreen/money_bg.png');
         this.load.image("popup_bg", 'asset/mainscreen/popup_bg.png');
+        this.load.image("play_icon", 'asset/new/youtube_icon.png');
 
     },
 

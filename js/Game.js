@@ -2,6 +2,7 @@
 // create Game function in BasicGame
 BasicGame.Game = function (game) {
     this.winPopup = null;
+    this.buttonStyle = {font: "64px officina_sans", fill: "#ffffff", align: "center"};
 };
 
 
@@ -91,6 +92,7 @@ BasicGame.Game.prototype = {
 
 
         this.playerSprite = this.paddles.create(this.world.width / 2, this.world.height - 180 ,'bitok');
+        this.playerSprite.y = this.world.height - this.playerSprite.height - 180;
         this.playerSprite.tint = 0x1a79d7;
 
         this.physics.p2.enable(this.paddles, false); //change to true to see hitcircle
@@ -108,7 +110,7 @@ BasicGame.Game.prototype = {
         this.computer.anchor.setTo(0.5, 0.5);
         this.computer.body.x = this.world.width / 2;
 
-        var force = 250; //change this for difficulty levels
+        var force = 500; //change this for difficulty levels
         this.physics.p2.createLockConstraint(this.computerHandle, this.computer, [1,1], force);
         this.computerHandle.body.static = true;
 
@@ -338,10 +340,68 @@ BasicGame.Game.prototype = {
         this.winPopup.add(this.title);
         this.title.x = this.winPopup.width / 2 - this.title.width / 2;
 
+        var playButtonGroup = this.game.add.group();
+        var play_button = this.add.button(0,0,"btn_green", this.replay, this);
+        playButtonGroup.add(play_button);
+        var play_icon = this.add.sprite(0,0, "play_icon");
+        playButtonGroup.add(play_icon);
+        play_icon.y = playButtonGroup.height/2 - play_icon.height / 2;
+        play_icon.x = 100;
+
+        var playButtonText = this.add.text(0 , 0, Settings.locale.REPLAY_BUTTON, this.buttonStyle); // enemy score
+        playButtonGroup.add(playButtonText);
+
+        playButtonText.y = playButtonGroup.height / 2 - playButtonText.height / 2;
+        playButtonText.x = playButtonGroup.width / 2 - playButtonText.width / 2 + play_icon.width / 2;
+
+        this.winPopup.add(playButtonGroup);
+        playButtonGroup.x = this.winPopup.width/2 - playButtonGroup.width / 2;
+        playButtonGroup.y = 850;
+
+        var scoreStyle = {font: "120px officina_sans", fill: "#FEEB5F", align: "center"};
+        var score = this.add.text( 0, 0, this.scoreR, scoreStyle);
+        this.winPopup.add(score);
+        score.x = this.winPopup.width / 2 - score.width / 2;
+        score.y = 300;
+
+        //0x625D86
+        var otherTextStyle = {font: "50px officina_sans", fill: "#625D86", align: "center"};
+        var yourScore = this.add.text(0,0, Settings.locale.YOUR_SCORE, otherTextStyle);
+        this.winPopup.add(yourScore);
+        yourScore.x = this.winPopup.width / 2 - yourScore.width / 2;
+        yourScore.y = 200;
+
+
+        var yourReward = this.add.text(0,0, Settings.locale.YOUR_REWARD, otherTextStyle);
+        this.winPopup.add(yourReward);
+        yourReward.x = this.winPopup.width / 2 - yourReward.width / 2;
+        yourReward.y = 500;
+
+        var scoreContainer = this.game.add.group();
+        var icon_money = this.add.sprite(0,0,"icon_coin");
+        scoreContainer.add(icon_money);
+
+        var rewardStyle = {font: "90px officina_sans", fill: "#625D86", align: "center"};
+        var money = this.add.text(0,0, isPlayer ? Settings.WIN_REWARD : 0, rewardStyle);
+        scoreContainer.add(money);
+        money.x = icon_money.x + icon_money.width + 20;
+        money.y = scoreContainer.height / 2 - money.height / 2;
+
+
+        this.winPopup.add(scoreContainer);
+        scoreContainer.x = this.winPopup.width / 2 - scoreContainer.width / 2;
+        scoreContainer.y = 600;
 
 
         this.winPopup.x = this.world.width / 2 - this.winPopup.width / 2;
         this.winPopup.y = this.world.height / 2 - this.winPopup.height / 2;
+
+    },
+
+    replay : function()
+    {
+        this.game.numPlayers = 1;
+        this.game.state.start('Game');
     },
 
 

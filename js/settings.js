@@ -28,8 +28,14 @@ Settings.PLAYER_GATE_COLLIDER_OFFSET_X = 0;
 Settings.ENEMY_GATE_COLLIDER_OFFSET_X = 0;
 
 
+// реворд за победу
+Settings.WIN_REWARD = 30;
+
 
 // текста тоже сюда наверное
 Settings.locale = {};
 Settings.locale.YOU_WIN = "YOU WIN!";
 Settings.locale.ENEMY_WIN = "ENEMY WIN!";
+Settings.locale.REPLAY_BUTTON = "Replay";
+Settings.locale.YOUR_SCORE = "Your score:";
+Settings.locale.YOUR_REWARD = "Your reward:";
