@@ -9,19 +9,46 @@ BasicGame.Preloader = function (game) {
 
 BasicGame.Preloader.prototype = {
 
-    preload: function () {
+    drawPreloader : function(){
 
         //	These are the assets we loaded in Boot.js
         //	A nice sparkly background and a loading progress bar
-        var tmpImg1 = this.cache.getImage('preloaderBackground');
-        this.add.sprite(this.world.centerX-tmpImg1.width/2.0, 10, 'preloaderBackground');
 
-        this.preloadBar = this.add.sprite(50, 170, 'preloaderBar');
+        var back =  this.add.sprite(0, 0, 'main_bg');
+        back.width = this.world.width;
+        back.height = this.world.height;
+
+
+        var logo = this.add.sprite(0,0, 'logo');
+        logo.scale.set(GameApp.SCALE_RATIO);
+
+        logo.x = (this.world.width - logo.width) / 2;
+        logo.y = logo.height / 2;
+
+
+        var preloader_bg = this.add.sprite(0, 0, "prbar_bg");
+
+        preloader_bg.x = (this.world.width - preloader_bg.width)/ 2;
+        preloader_bg.y = (this.world.height - preloader_bg.height) / 2;
+
+        this.preloadBar = this.add.sprite(0, 0, "prbar_color");
+
+
+        this.preloadBar.x = (this.world.width - this.preloadBar.width)/ 2;
+        this.preloadBar.y = (this.world.height - this.preloadBar.height) / 2;
+        this.preloadBar.tint = 0x3f9dfc;
+
 
         //	This sets the preloadBar sprite as a loader sprite.
         //	What that does is automatically crop the sprite from 0 to full-width
         //	as the files below are loaded in.
         this.load.setPreloadSprite(this.preloadBar);
+
+    },
+
+    preload: function () {
+
+        this.drawPreloader();
 
         //	Here we load the rest of the assets our game needs.
         //	As this is just a Project Template I've not provided these assets
@@ -31,42 +58,21 @@ BasicGame.Preloader.prototype = {
         this.load.image('goalLeft', 'asset/redGoal.png');
         // this.load.image('airhole', 'asset/hole4.png');
         this.load.image('airhole', 'asset/field_dot.png');
-        this.load.image('players', 'asset/players.png');
-        this.load.image('button1', 'asset/button1.png');
-        this.load.image('button2', 'asset/button2.png');
-        this.load.image('button3', 'asset/button3.png');
-        this.load.image('button4', 'asset/button4.png');
+
         this.load.image('mainMenu', 'asset/buttons.png');
-
-
         this.load.image("newPuck", "asset/puck.png")
         this.load.image("bitok", "asset/hockey_bat.png");
-
-        //this.load.image('titlepage', 'images/title.jpg');
-        //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
-        //this.load.audio('titleMusic', ['audio/main_menu.mp3']);
-        //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
-        //	+ lots of other required assets here
-
-        // main screen loading assets block
 
 
         this.load.image("new_gate", 'asset/gates.png');
         this.load.image("new_gate1", 'asset/gatesLeft.png');
 
-        // load resources from main screen
-        this.load.image("main_bg", 'asset/mainscreen/bg.jpg');
-        this.load.image("btn_green", 'asset/mainscreen/btn_green.png');
-        this.load.image("btn_violet", 'asset/mainscreen/btn_violet.png');
-        this.load.image("btn_yellow", 'asset/mainscreen/btn_yellow.png');
-        this.load.image("cloud_1", 'asset/mainscreen/cloud_1.png');
-        this.load.image("cloud_2", 'asset/mainscreen/cloud_2.png');
-        this.load.image("icon_coin", 'asset/mainscreen/icon_coin.png');
-        this.load.image("logo", 'asset/mainscreen/logo.png');
-        this.load.image("money_bg", 'asset/mainscreen/money_bg.png');
-        this.load.image("popup_bg", 'asset/mainscreen/popup_bg.png');
-        this.load.image("play_icon", 'asset/new/youtube_icon.png');
 
+
+        for (var key in Settings.resources)
+        {
+            this.load.image(key, Settings.resources[key]);
+        }
     },
 
     create: function () {

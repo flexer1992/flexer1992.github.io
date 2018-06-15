@@ -3,6 +3,7 @@
 BasicGame.Game = function (game) {
     this.winPopup = null;
     this.buttonStyle = {font: "64px officina_sans", fill: "#ffffff", align: "center"};
+    this.botState = 0;
 };
 
 
@@ -169,7 +170,161 @@ BasicGame.Game.prototype = {
 
     update: function(){
 
-        if(this.ticks< 4)
+        // if(Settings.USE_NEW_BOT === true){
+        //     this.newBotLogic();
+        // }else{
+        //     this.oldBootLogic();
+        // }
+        // this.myBotLogic();
+        this.newBotLogic();
+    },
+
+    // 0 - defense
+    // 1 - attack
+    // 2 - attackMove
+    myBotLogic : function()
+    {
+
+        var botX = this.computerHandle.body.x;
+        var botY = this.computerHandle.body.y;
+
+        var puckX = this.puck.body.x;
+        var puckY = this.puck.body.y;
+
+        // defence
+        if(this.botState == 0)
+        {
+            //защита это по факту слежение за положением херни по которой бъем
+            // защищаемся пока расстояние от битка до шарика не будет определенным
+            var distance =  this.puck.body.y - this.computerHandle.body.y;
+
+
+            if(distance < Settings.DISTANCE_BETWEEN_PUCK_AND_BOT)
+            {
+                this.botState = 1;
+            }else {
+                this._moveTo(botX, botY, this.world.width / 4 + this.world.width / 2 * (puckX / (this.world.width)) , this.world.height / 6);
+            }
+
+        }
+
+        // attack
+        if(this.botState == 1)
+        {
+            if(this.ticks < 30)
+            {
+                this._moveTo(botX, botY, puckX, puckY);
+                this.ticks++;
+            }else {
+                this.botState = 0;
+                this.ticks = 0;
+            }
+
+
+        }
+    },
+
+    newBotLogic : function()
+    {
+        var botX = this.computerHandle.body.x;
+        var botY = this.computerHandle.body.y;
+
+        var puckX = this.puck.body.x;
+        var puckY = this.puck.body.y;
+
+
+        if(this.ticks < Settings.SKIP_TICKS_FROM_ATTACK)
+        {
+            // deffense
+            this.ticks++;
+            this._defense(botX, botY, puckX, puckY);
+            return;
+        }else {
+            // select attack or defence?;
+            this._makeDecision(botX, botY, puckX, puckY);
+            this.ticks = 0;
+        }
+    },
+
+    _defense : function (x, y, px, py)
+    {
+        if (py < y && Math.abs(this.world.width / 2 - px) > this.world.width / 5)
+            return this._moveTo(x, y, px, py - Settings.PUCK_RADIUS);
+        this._moveTo(x, y, this.world.width / 4 + this.world.width / 2 * (px / (this.world.width)) , this.world.height / 6);
+        return true;
+    },
+
+    _makeDecision : function(x, y, px, py)
+    {
+       // console.log("make decision");
+
+        // attack when puck is in our corner
+        // var puckInCorner = px < this.world.width / 5 || px > 4 * this.world.width / 5;
+        // console.log(puckInCorner);
+        // console.log(py);
+        // if (puckInCorner && py < 2 * Settings.PUCK_RADIUS ) {
+        //     return ;
+        // }
+
+
+        if(py > this.world.height / 2 + Settings.PUCK_RADIUS)
+        {
+         //   console.log("skip attack");
+            return;
+        }
+
+
+        // move to puck's position and hit puck to the second half of table
+        if (py < (this.world.height / 2 ) + Settings.PUCK_RADIUS)
+        {
+           // console.log("attack");
+            return this._moveTo(x, y, px, py - Settings.PUCK_RADIUS / 4);
+        }
+
+        //console.log("makeDecision defense");
+        return this._defense(x, y, px, py);
+    },
+
+
+
+     _moveTo : function(ox, oy, px, py)
+    {
+        var speed = Math.min(640, this.world.width) / (40 + this.getRandom(20));
+
+
+        // calculate deltas
+        const dx = px - ox;
+        const dy = py - oy;
+
+
+        // calculate distance between puck and paddle position (we use Pythagorean theorem)
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        // if total distance is greater than the distance, of which we can move in one step calculate new x and y coordinates somewhere between current puck and paddle position.
+        if (distance > speed) {
+            // x = current padle x position + equally part of speed on x axis
+            px = ox + speed / distance * dx;
+            py = oy + speed / distance * dy;
+        }
+        // move paddle to the new position
+        // this.joint.setTarget(this.table.x2box2d(px), this.table.y2box2d(py));
+
+        this.computerHandle.body.x = px;
+        this.computerHandle.body.y = py;
+        return true;
+    },
+
+
+
+
+
+    getRandom : function(number)
+    {
+        return Math.floor(Math.random() * number) + 1;
+    },
+
+    oldBootLogic : function()
+    {
+        if(this.ticks < Settings.BOT_DELAY_TICKS)
         {
             this.ticks++;
             return;
@@ -234,7 +389,6 @@ BasicGame.Game.prototype = {
             }
         }
     },
-
 
 
     getDistance:	function(x, y)	{
@@ -330,72 +484,7 @@ BasicGame.Game.prototype = {
             this.winPopup.destroy();
         }
 
-        this.winPopup = this.game.add.group();
-        var bg = this.add.sprite(0,0, "popup_bg");
-        this.winPopup.add(bg);
-
-        this.titleStyle = {font: "64px officina_sans", fill: "#ffffff", align: "center"};
-
-        this.title = this.add.text(this.winPopup.width /  2 , 60, isPlayer ? Settings.locale.YOU_WIN : Settings.locale.ENEMY_WIN, this.titleStyle); // enemy score
-        this.winPopup.add(this.title);
-        this.title.x = this.winPopup.width / 2 - this.title.width / 2;
-
-        var playButtonGroup = this.game.add.group();
-        var play_button = this.add.button(0,0,"btn_green", this.replay, this);
-        playButtonGroup.add(play_button);
-        var play_icon = this.add.sprite(0,0, "play_icon");
-        playButtonGroup.add(play_icon);
-        play_icon.y = playButtonGroup.height/2 - play_icon.height / 2;
-        play_icon.x = 100;
-
-        var playButtonText = this.add.text(0 , 0, Settings.locale.REPLAY_BUTTON, this.buttonStyle); // enemy score
-        playButtonGroup.add(playButtonText);
-
-        playButtonText.y = playButtonGroup.height / 2 - playButtonText.height / 2;
-        playButtonText.x = playButtonGroup.width / 2 - playButtonText.width / 2 + play_icon.width / 2;
-
-        this.winPopup.add(playButtonGroup);
-        playButtonGroup.x = this.winPopup.width/2 - playButtonGroup.width / 2;
-        playButtonGroup.y = 850;
-
-        var scoreStyle = {font: "120px officina_sans", fill: "#FEEB5F", align: "center"};
-        var score = this.add.text( 0, 0, this.scoreR, scoreStyle);
-        this.winPopup.add(score);
-        score.x = this.winPopup.width / 2 - score.width / 2;
-        score.y = 300;
-
-        //0x625D86
-        var otherTextStyle = {font: "50px officina_sans", fill: "#625D86", align: "center"};
-        var yourScore = this.add.text(0,0, Settings.locale.YOUR_SCORE, otherTextStyle);
-        this.winPopup.add(yourScore);
-        yourScore.x = this.winPopup.width / 2 - yourScore.width / 2;
-        yourScore.y = 200;
-
-
-        var yourReward = this.add.text(0,0, Settings.locale.YOUR_REWARD, otherTextStyle);
-        this.winPopup.add(yourReward);
-        yourReward.x = this.winPopup.width / 2 - yourReward.width / 2;
-        yourReward.y = 500;
-
-        var scoreContainer = this.game.add.group();
-        var icon_money = this.add.sprite(0,0,"icon_coin");
-        scoreContainer.add(icon_money);
-
-        var rewardStyle = {font: "90px officina_sans", fill: "#625D86", align: "center"};
-        var money = this.add.text(0,0, isPlayer ? Settings.WIN_REWARD : 0, rewardStyle);
-        scoreContainer.add(money);
-        money.x = icon_money.x + icon_money.width + 20;
-        money.y = scoreContainer.height / 2 - money.height / 2;
-
-
-        this.winPopup.add(scoreContainer);
-        scoreContainer.x = this.winPopup.width / 2 - scoreContainer.width / 2;
-        scoreContainer.y = 600;
-
-
-        this.winPopup.x = this.world.width / 2 - this.winPopup.width / 2;
-        this.winPopup.y = this.world.height / 2 - this.winPopup.height / 2;
-
+        this.winPopup = WindowManager.endBattleWindow({winner : isPlayer, yourScore : this.scoreR, enemyScore : this.scoreL, reward : isPlayer ? Settings.WIN_REWARD : 0}, this.game);
     },
 
     replay : function()

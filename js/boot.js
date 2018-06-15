@@ -25,6 +25,10 @@ BasicGame.Boot.prototype = {
         else
         {
 
+            // this.game.input.maxPointers = 2;
+
+            // this.game.input.multiInputOverride = Phaser.Input.TOUCH_OVERRIDES_MOUSE;
+
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
             // If you wish to align your game in the middle of the page then you can
             // set this value to true. It will place a re-calculated margin-left
@@ -49,6 +53,7 @@ BasicGame.Boot.prototype = {
            // this.scale.SetSce
             // Re-calculate scale mode and update screen size. This only applies if
             // ScaleMode is not set to RESIZE.
+            this.scale.setMinMax(480, 260, 1024, 768);
             this.scale.refresh();
 
 
@@ -67,8 +72,10 @@ BasicGame.Boot.prototype = {
     preload: function () {
 
         //  Here we load the assets required for our preloader (in this case a background and a loading bar)
-        this.load.image('preloaderBackground', 'asset/airHockeySplash.png');
-        this.load.image('preloaderBar', 'asset/preloader-bar.png');
+        for (var key in Settings.firstPreloaded)
+        {
+            this.load.image(key, Settings.firstPreloaded[key]);
+        }
 
     },
 
