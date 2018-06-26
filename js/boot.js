@@ -17,6 +17,7 @@ BasicGame.Boot.prototype = {
 
         if (this.game.device.desktop)
         {
+            console.log("desktop run")
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
             this.scale.setMinMax(480, 260, 1024, 768);
             this.scale.pageAlignHorizontally = true;
@@ -40,21 +41,21 @@ BasicGame.Boot.prototype = {
             // Force the orientation in landscape or portrait.
             // * Set first to true to force landscape.
             // * Set second to true to force portrait.
-            this.scale.forceOrientation(true, false);
+           this.scale.forceOrientation(true, false);
             // Sets the callback that will be called when the window resize event
             // occurs, or if set the parent container changes dimensions. Use this
             // to handle responsive game layout options. Note that the callback will
             // only be called if the ScaleManager.scaleMode is set to RESIZE.
-            this.scale.setResizeCallback(this.gameResized, this);
+           this.scale.setResizeCallback(this.gameResized, this);
             // Set screen size automatically based on the scaleMode. This is only
             // needed if ScaleMode is not set to RESIZE.
-           // this.scale.setScreenSize(true);
+           this.scale.setScreenSize(true);
            //
            // this.scale.SetSce
             // Re-calculate scale mode and update screen size. This only applies if
             // ScaleMode is not set to RESIZE.
-            this.scale.setMinMax(480, 260, 1024, 768);
-            this.scale.refresh();
+            // this.scale.setMinMax(480, 260, 1024, 768);
+            // this.scale.refresh();
 
 
             // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -86,11 +87,9 @@ BasicGame.Boot.prototype = {
     },
 
     gameResized: function (width, height) {
-
         //  This could be handy if you need to do any extra processing if the game resizes.
         //  A resize could happen if for example swapping orientation on a device or resizing the browser window.
         //  Note that this callback is only really useful if you use a ScaleMode of RESIZE and place it inside your main game state.
-
     },
 
     enterIncorrectOrientation: function () {

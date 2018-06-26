@@ -17,7 +17,7 @@
     <!--<script src="js/phaser-compat-2.4.js" type="text/javascript"></script>-->
     <!--<script src="js/EZGUI.js" type="text/javascript"></script>-->
 
-    <!--<script src="js/ScaleManager2.js" type="text/javascript"></script>-->
+    <script src="js/ScaleManager2.js" type="text/javascript"></script>
 
 
     <style type="text/css">
@@ -41,6 +41,7 @@
 
 </script>
     <script src="https://connect.facebook.net/en_US/fbinstant.6.0.js"></script>
+    <script src="js/phaser-slide.js" type="text/javascript"></script>
     <script src="js/settings.js" type="text/javascript"></script>
     <script src="js/GatchaModule.js" type="text/javascript"></script>
     <script src="js/basicgame.js" type="text/javascript"></script>
@@ -51,10 +52,14 @@
     <script src="js/gameLoader.js" type="text/javascript"></script>
     <script src="js/windowManager.js" type="text/javascript"></script>
     <script src="js/UiFactory.js" type="text/javascript"></script>
+    <script src="js/UserData.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 
     var isLocalMode = true;
+    var game;
+
+    let scaleRatio = window.devicePixelRatio / 3;
 
     window.onload = function () {
 
@@ -85,12 +90,18 @@
 
     function startGame()
     {
-        window.game = new Phaser.Game(1080, 1920, Phaser.AUTO, 'wrapper');
+
+
+
+        // window.game = new Phaser.Game(1080, 1920, Phaser.AUTO, 'wrapper');
+        game = new Phaser.Game(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, Phaser.AUTO, 'wrapper');
         game.state.add('Game', BasicGame.Game);
         game.state.add('MainMenu', BasicGame.MainMenu);
         game.state.add('Preload', BasicGame.Preloader);
         game.state.add('Boot', BasicGame.Boot);
         game.state.start('Boot');
+
+
     }
 
 

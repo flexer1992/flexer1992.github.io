@@ -20,23 +20,26 @@ BasicGame.Preloader.prototype = {
 
 
         var logo = this.add.sprite(0,0, 'logo');
-        logo.scale.set(GameApp.SCALE_RATIO);
+        logo.scale.set(scaleRatio, scaleRatio);
 
         logo.x = (this.world.width - logo.width) / 2;
         logo.y = logo.height / 2;
 
 
         var preloader_bg = this.add.sprite(0, 0, "prbar_bg");
+      //  preloader_bg.scale.set(scaleRatio, scaleRatio);
 
         preloader_bg.x = (this.world.width - preloader_bg.width)/ 2;
         preloader_bg.y = (this.world.height - preloader_bg.height) / 2;
 
         this.preloadBar = this.add.sprite(0, 0, "prbar_color");
-
+    //    this.preloadBar.scale.set(scaleRatio, scaleRatio);
 
         this.preloadBar.x = (this.world.width - this.preloadBar.width)/ 2;
         this.preloadBar.y = (this.world.height - this.preloadBar.height) / 2;
         this.preloadBar.tint = 0x3f9dfc;
+
+
 
 
         //	This sets the preloadBar sprite as a loader sprite.
@@ -52,17 +55,6 @@ BasicGame.Preloader.prototype = {
 
         //	Here we load the rest of the assets our game needs.
         //	As this is just a Project Template I've not provided these assets
-        this.load.image('puck', 'asset/rubber_puck3.png');
-        this.load.image('paddle', 'asset/rubber_paddle.png');
-        this.load.image('goalRight', 'asset/blueGoal.png');
-        this.load.image('goalLeft', 'asset/redGoal.png');
-        // this.load.image('airhole', 'asset/hole4.png');
-        this.load.image('airhole', 'asset/field_dot.png');
-
-        this.load.image('mainMenu', 'asset/buttons.png');
-        this.load.image("newPuck", "asset/puck.png")
-        this.load.image("bitok", "asset/hockey_bat.png");
-
 
         this.load.image("new_gate", 'asset/gates.png');
         this.load.image("new_gate1", 'asset/gatesLeft.png');
@@ -85,7 +77,6 @@ BasicGame.Preloader.prototype = {
     update: function () {
 
         //Todo: pause a bit
-
         this.state.start('MainMenu');
 
         /*

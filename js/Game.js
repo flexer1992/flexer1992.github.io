@@ -4,6 +4,9 @@ BasicGame.Game = function (game) {
     this.winPopup = null;
     this.buttonStyle = {font: "64px officina_sans", fill: "#ffffff", align: "center"};
     this.botState = 0;
+    this.isFirstTimeInOpponentsHalf = true;
+    this.offsetXFromTarget = 0;
+    this.bot = {};
 };
 
 
@@ -12,27 +15,39 @@ BasicGame.Game.prototype = {
     init: function () {
         // TODO: Add logo to the center of the stage
 
+        this.bot = UserData.GetCurrentBot();
+
+        let boardSetting = UserData.GetCurrentField();
+
+        this.isFirstTimeInOpponentsHalf = true;
+
         this.AllScore = Settings.COUNT_TO_WIN;
 
-        //background to look like air hockey table
-        this.add.tileSprite(0, 0, this.world.width, this.world.height, 'airhole');
 
-        this.stage.backgroundColor = '#fff';
+        this.stage.backgroundColor = boardSetting.fieldColor;
+
+        //background to look like air hockey table
+        let dots = this.add.tileSprite(0, 0, this.world.width, this.world.height, 'field_dot');
+        dots.tint = boardSetting.dotColor;
+
+
         this.physics.startSystem(Phaser.Physics.P2JS);
         this.physics.p2.restitution = Settings.RESTITUTION; //this gives bounce
 
         //draw the board
         var graphics = this.add.graphics(0, 0);
-        graphics.beginFill(0xc0c0c0,0);
-        graphics.lineStyle(4, 0xD62D20, 0.5);
+        graphics.beginFill(0xc0c0c0, 0);
+        graphics.lineStyle(4, boardSetting.linesColor, 0.5);
 
 
         // //set up goals
         this.goalLeft = this.add.sprite(this.world.width / 2, 0, 'new_gate1');
+        this.goalLeft.scale.set(scaleRatio);
         this.goalLeft.y = this.goalLeft.height / 2;
         this.goalLeft.tint = 0xbf1f2d;
 
         this.goalRight = this.add.sprite(this.world.width / 2, this.world.height,'new_gate');
+        this.goalRight.scale.set(scaleRatio);
         this.goalRight.y = this.world.height - this.goalRight.height / 2;
         this.goalRight.tint = 0x156cc1;
 
@@ -40,21 +55,30 @@ BasicGame.Game.prototype = {
          this.physics.p2.enable([this.goalLeft,this.goalRight], Settings.SHOW_GATE_COLLIDERS); //change to true to see
         //
         this.goalLeft.body.static = true;
-        this.goalLeft.body.setRectangle(Settings.GATE_COLLIDER_WIDTH, Settings.GATE_COLLIDER_HEIGHT, Settings.ENEMY_GATE_COLLIDER_OFFSET_X, Settings.ENEMY_GATE_COLLIDER_OFFSET_Y);
+        this.goalLeft.body.setRectangle(Settings.GATE_COLLIDER_WIDTH * scaleRatio, Settings.GATE_COLLIDER_HEIGHT * scaleRatio,
+            Settings.ENEMY_GATE_COLLIDER_OFFSET_X * scaleRatio, Settings.ENEMY_GATE_COLLIDER_OFFSET_Y *scaleRatio);
 
 
         this.goalRight.body.static = true;
-        this.goalRight.body.setRectangle(Settings.GATE_COLLIDER_WIDTH, Settings.GATE_COLLIDER_HEIGHT, Settings.PLAYER_GATE_COLLIDER_OFFSET_X, Settings.PLAYER_GATE_COLLIDER_OFFSET_Y);
+        this.goalRight.body.setRectangle(Settings.GATE_COLLIDER_WIDTH * scaleRatio, Settings.GATE_COLLIDER_HEIGHT * scaleRatio,
+            Settings.PLAYER_GATE_COLLIDER_OFFSET_X * scaleRatio, Settings.PLAYER_GATE_COLLIDER_OFFSET_Y * scaleRatio);
 
 
         // отрисовка блоков с кругами
-        this.drawCircles(graphics, this.world.width / 2, this.world.height / 2, 500, 800);
+        this.drawCircles(graphics, this.world.width / 2, this.world.height / 2, 500 * scaleRatio, 800 * scaleRatio);
 
-        this.drawCircles(graphics, this.world.width/ 6, this.world.height / 6, 80, 260);
-        this.drawCircles(graphics, (this.world.width - this.world.width/ 6), this.world.height / 6, 80, 260);
+        this.drawCircles(graphics, this.world.width/ 6, this.world.height / 6, 80 * scaleRatio, 260 * scaleRatio);
+        this.drawCircles(graphics, (this.world.width - this.world.width/ 6), this.world.height / 6, 80 * scaleRatio, 260 * scaleRatio);
 
-        this.drawCircles(graphics, this.world.width/ 6, (this.world.height - this.world.height / 6), 80, 260);
-        this.drawCircles(graphics, (this.world.width - this.world.width/ 6), (this.world.height - this.world.height / 6), 80, 260);
+        this.drawCircles(graphics, this.world.width/ 6, (this.world.height - this.world.height / 6), 80 * scaleRatio, 260 * scaleRatio);
+        this.drawCircles(graphics, (this.world.width - this.world.width/ 6), (this.world.height - this.world.height / 6), 80 * scaleRatio, 260 * scaleRatio);
+
+
+        // Add puck to the center of the stage
+        this.puck = this.add.sprite(this.world.centerX, this.world.centerY, boardSetting.puck);
+        this.puck.scale.set(scaleRatio);
+        this.puck.anchor.setTo(0.5, 0.5);
+
 
     },
 
@@ -67,34 +91,27 @@ BasicGame.Game.prototype = {
     },
 
 
-    preload: function () {
-        // Here we load the assets required for our preloader
-
-    },
-
     create: function () {
-
-
-        // Add puck to the center of the stage
-        this.puck = this.add.sprite(this.world.centerX, this.world.centerY,'newPuck');
-        this.puck.anchor.setTo(0.5, 0.5);
 
         // turn false the collision circle in production
         this.physics.p2.enable(this.puck, false); //change to true to see hitcircle
-        this.puck.body.setCircle(70);
+        this.puck.body.setCircle(70 * scaleRatio);
         this.puck.body.collideWorldBounds = true;
 
         //add paddles up to 4 (able to add multiple paddles)
         this.paddles = this.add.group();
 
+        let playerBat = UserData.GetCurrentBat();
+        let enemyBat = UserData.GetEnemyBat();
+
+
         //one player setup with two paddles one named
-        this.computer = this.paddles.create(this.world.width / 2, 180  ,'bitok');
-        this.computer.tint = 0xaa1111;
+        this.computer = this.paddles.create(this.world.width / 2, 180  * scaleRatio , enemyBat.icon);
+        this.computer.scale.set(scaleRatio);
 
-
-        this.playerSprite = this.paddles.create(this.world.width / 2, this.world.height - 180 ,'bitok');
-        this.playerSprite.y = this.world.height - this.playerSprite.height - 180;
-        this.playerSprite.tint = 0x1a79d7;
+        this.playerSprite = this.paddles.create(this.world.width / 2, this.world.height - 180 * scaleRatio , playerBat.icon);
+        this.playerSprite.scale.set(scaleRatio);
+        this.playerSprite.y = this.world.height - this.playerSprite.height - 180 * scaleRatio;
 
         this.physics.p2.enable(this.paddles, false); //change to true to see hitcircle
 
@@ -106,7 +123,7 @@ BasicGame.Game.prototype = {
         this.computerHandle.anchor.setTo(0.5, 0.5);
 
         this.computerHandle.body.x = this.world.width / 2;
-        this.computerHandle.body.y = 180;
+        this.computerHandle.body.y = 180 * scaleRatio;
 
         this.computer.anchor.setTo(0.5, 0.5);
         this.computer.body.x = this.world.width / 2;
@@ -119,7 +136,7 @@ BasicGame.Game.prototype = {
         this.paddles.forEach(function(paddle){
             paddle.anchor.setTo(0.5, 0.5);
             paddle.body.collideWorldBounds = true;
-            paddle.body.setCircle(117);
+            paddle.body.setCircle(117 * scaleRatio);
         });
 
         this.goalLeft.bringToTop();
@@ -129,20 +146,20 @@ BasicGame.Game.prototype = {
         this.puck.body.createBodyCallback(this.goalLeft, this.scoreLeft, this);
         this.puck.body.createBodyCallback(this.goalRight, this.scoreRight, this);
 
-
-
         this.physics.p2.setImpactEvents(true);
 
+
         //input event liseteners
-        this.input.onDown.add(this.paddleGrab, this);
-        this.input.onUp.add(this.paddleDrop, this);
-        this.input.addMoveCallback(this.paddleMove, this);
+
+       this.input.onDown.add(this.paddleGrab, this);
+       this.input.onUp.add(this.paddleDrop, this);
+       this.input.addMoveCallback(this.paddleMove, this);
+
 
         // for eject puck timer
-        this.timerTxt = this.add.text(this.world.centerY-5, 5, 'New Puck: 5', { font: "16px officina_sans", fill: "#3369E8", align: "center" });
+        this.timerTxt = this.add.text(this.world.centerX, this.world.centerY, 'New Puck: 5', { font: "40px officina_sans", fill: "#3369E8", align: "center" });
         this.timerTxt.anchor.setTo(0.5, 0.5);
         this.timerTxt.visible = false;
-        this.timerTxt.angle = 90;
 
         this.initScoreContainer();
     },
@@ -169,230 +186,58 @@ BasicGame.Game.prototype = {
 
 
     update: function(){
-
-        // if(Settings.USE_NEW_BOT === true){
-        //     this.newBotLogic();
-        // }else{
-        //     this.oldBootLogic();
-        // }
-        // this.myBotLogic();
-        this.newBotLogic();
+        this.finalBotLogick();
+        this.checkPlayerSprite();
     },
 
-    // 0 - defense
-    // 1 - attack
-    // 2 - attackMove
-    myBotLogic : function()
-    {
-
-        var botX = this.computerHandle.body.x;
-        var botY = this.computerHandle.body.y;
-
-        var puckX = this.puck.body.x;
-        var puckY = this.puck.body.y;
-
-        // defence
-        if(this.botState == 0)
+    checkPlayerSprite : function(){
+        if(this.playerSprite.body.y < this.game.world.height / 2)
         {
-            //защита это по факту слежение за положением херни по которой бъем
-            // защищаемся пока расстояние от битка до шарика не будет определенным
-            var distance =  this.puck.body.y - this.computerHandle.body.y;
+            this.playerSprite.body.y = this.game.world.height / 2;
+        }
+    },
+
+    finalBotLogick : function(){
+        let puckX = this.puck.body.x;
+        let puckY = this.puck.body.y;
+
+        let movementSpeed;
+        let deltaTime = this.game.time.elapsed/1000;
 
 
-            if(distance < Settings.DISTANCE_BETWEEN_PUCK_AND_BOT)
+        let targetX;
+        let targetY;
+
+
+        if(puckY < this.bot.playerBoundary.Down * scaleRatio)
+        {
+            if(this.isFirstTimeInOpponentsHalf)
             {
-                this.botState = 1;
-            }else {
-                this._moveTo(botX, botY, this.world.width / 4 + this.world.width / 2 * (puckX / (this.world.width)) , this.world.height / 6);
+                this.isFirstTimeInOpponentsHalf = false;
+                this.offsetXFromTarget = UserData.GetRandomFloat(-1, 1);
             }
 
-        }
+            movementSpeed = this.bot.MovementSpeed ;///* UserData.GetRandomFloat(0.1, 0.3);
+            targetX = UserData.Clamp(puckX + this.offsetXFromTarget, this.bot.playerBoundary.Left * scaleRatio, this.bot.playerBoundary.Right * scaleRatio);
+            targetY = puckY;
 
-        // attack
-        if(this.botState == 1)
-        {
-            if(this.ticks < 30)
-            {
-                this._moveTo(botX, botY, puckX, puckY);
-                this.ticks++;
-            }else {
-                this.botState = 0;
-                this.ticks = 0;
-            }
-
-
-        }
-    },
-
-    newBotLogic : function()
-    {
-        var botX = this.computerHandle.body.x;
-        var botY = this.computerHandle.body.y;
-
-        var puckX = this.puck.body.x;
-        var puckY = this.puck.body.y;
-
-
-        if(this.ticks < Settings.SKIP_TICKS_FROM_ATTACK)
-        {
-            // deffense
-            this.ticks++;
-            this._defense(botX, botY, puckX, puckY);
-            return;
-        }else {
-            // select attack or defence?;
-            this._makeDecision(botX, botY, puckX, puckY);
-            this.ticks = 0;
-        }
-    },
-
-    _defense : function (x, y, px, py)
-    {
-        if (py < y && Math.abs(this.world.width / 2 - px) > this.world.width / 5)
-            return this._moveTo(x, y, px, py - Settings.PUCK_RADIUS);
-        this._moveTo(x, y, this.world.width / 4 + this.world.width / 2 * (px / (this.world.width)) , this.world.height / 6);
-        return true;
-    },
-
-    _makeDecision : function(x, y, px, py)
-    {
-       // console.log("make decision");
-
-        // attack when puck is in our corner
-        // var puckInCorner = px < this.world.width / 5 || px > 4 * this.world.width / 5;
-        // console.log(puckInCorner);
-        // console.log(py);
-        // if (puckInCorner && py < 2 * Settings.PUCK_RADIUS ) {
-        //     return ;
-        // }
-
-
-        if(py > this.world.height / 2 + Settings.PUCK_RADIUS)
-        {
-         //   console.log("skip attack");
-            return;
-        }
-
-
-        // move to puck's position and hit puck to the second half of table
-        if (py < (this.world.height / 2 ) + Settings.PUCK_RADIUS)
-        {
-           // console.log("attack");
-            return this._moveTo(x, y, px, py - Settings.PUCK_RADIUS / 4);
-        }
-
-        //console.log("makeDecision defense");
-        return this._defense(x, y, px, py);
-    },
-
-
-
-     _moveTo : function(ox, oy, px, py)
-    {
-        var speed = Math.min(640, this.world.width) / (40 + this.getRandom(20));
-
-
-        // calculate deltas
-        const dx = px - ox;
-        const dy = py - oy;
-
-
-        // calculate distance between puck and paddle position (we use Pythagorean theorem)
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        // if total distance is greater than the distance, of which we can move in one step calculate new x and y coordinates somewhere between current puck and paddle position.
-        if (distance > speed) {
-            // x = current padle x position + equally part of speed on x axis
-            px = ox + speed / distance * dx;
-            py = oy + speed / distance * dy;
-        }
-        // move paddle to the new position
-        // this.joint.setTarget(this.table.x2box2d(px), this.table.y2box2d(py));
-
-        this.computerHandle.body.x = px;
-        this.computerHandle.body.y = py;
-        return true;
-    },
-
-
-
-
-
-    getRandom : function(number)
-    {
-        return Math.floor(Math.random() * number) + 1;
-    },
-
-    oldBootLogic : function()
-    {
-        if(this.ticks < Settings.BOT_DELAY_TICKS)
-        {
-            this.ticks++;
-            return;
         }
         else
         {
-            this.ticks=	0;
+            this.isFirstTimeInOpponentsHalf = true;
+
+            movementSpeed = UserData.GetRandomFloat(this.bot.MovementSpeed * 0.4, this.bot.MovementSpeed);
+
+            targetX = UserData.Clamp(puckX, this.bot.playerBoundary.Left * scaleRatio, this.bot.playerBoundary.Right * scaleRatio);
+            targetY = UserData.Clamp(puckY, this.bot.playerBoundary.Down * scaleRatio, this.bot.playerBoundary.Up * scaleRatio);
         }
 
 
-        if(this.computerHandle.body.y > this.world.centerY)
-        {
-            this.computerHandle.body.y = Settings.DEFAULT_BOT_Y_POSITION;
-            return;
-        }
+        let directionX = targetX - this.computerHandle.body.x;
+        let directionY = targetY - this.computerHandle.body.y;
 
-
-        // 1 player ai
-        var deltaY;
-        var	velDist;
-
-        if(this.game.numPlayers == 1){
-            if(this.puck.body.x > this.world.centerX - Settings.BOT_DELTA_X && this.puck.body.x < this.world.centerX + Settings.BOT_DELTA_X){
-                this.computerHandle.body.x = this.puck.body.x;
-            }
-
-            // deltaY/4 will give the ai a margin of error big enough for the player to score something, change that around to see if it makes it easier or something
-            deltaY = this.puck.body.y - this.computerHandle.body.y;
-
-
-            if(deltaY >= 0 && deltaY < Settings.BOT_DELTA_Y){
-                this.computerHandle.body.y = Settings.BOT_THRUST_FORWARD;  //thrust forward
-                this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
-            }
-            else if(deltaY < 0){
-                this.computerHandle.body.y = Settings.BOT_THRUST_BACK;  //thrust back
-                this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
-
-            }
-            else
-                this.computerHandle.body.y = Settings.BOT_THRUST_FORWARD;  //thrust forward
-
-
-            // Gets the velocity distance (Magnitude)
-            velDist = this.getDistance(this.puck.body.velocity.x, this.puck.body.velocity.y);
-
-            if(velDist> Settings.BOT_DEFFENSIVE_VELOCITY)
-            {
-                // Makes the puck go defensive
-                // If the puck is going too fast then make the computer try and defend the goal by spaztically moving side to side
-                this.computerHandle.body.y = Settings.BOT_DEFFENSIVE_POSITION; // This will make the puck more 'defensive' but will make it easier
-                this.computerHandle.body.x = this.world.centerX + this.rnd.integerInRange(-Settings.BOT_DELTA_X, Settings.BOT_DELTA_X);
-            }
-            if(this.puck.body.x> this.world.centerX / 2 && this.puck.body.x < this.world.centerX / 2)
-            {
-                // Flings the puck forward
-                // If the puck is going too fast, just assume and fling towards the 3 quarter mark
-                if(velDist> Settings.BOT_DEFFENSIVE_VELOCITY)
-                    this.computerHandle.body.x = this.world.centerX * (3/4);
-                else // Else just hit towards the puck with a margin of error
-                    this.computerHandle.body.x = this.puck.body.x - deltaY / Settings.BOT_EASIER;
-            }
-        }
-    },
-
-
-    getDistance:	function(x, y)	{
-        return (Math.sqrt(x*x+y*y));
+        this.computerHandle.body.x += directionX * deltaTime * movementSpeed ;
+        this.computerHandle.body.y += directionY * deltaTime * movementSpeed;
     },
 
     ticks:	0,
@@ -405,19 +250,6 @@ BasicGame.Game.prototype = {
         this.scoreRtxt.setText(this.scoreR);
         this.puck.kill();
         this.timer = this.time.events.loop(500, this.updateCounter, this);
-        this.aiTimer=	this.time.events.loop(80, function()
-            {
-                // Makes the computer angry
-                // this.computerHandle.body.x =	65+this.rnd.integerInRange(-4, 80);
-                // this.computerHandle.body.y =	this.world.centerY+this.rnd.integerInRange(-80, 80);
-
-                this.computerHandle.body.x =	this.world.centerX + this.rnd.integerInRange(-80, 80);;
-                this.computerHandle.body.y =	120  +  this.rnd.integerInRange(-4, 80) ;
-
-
-
-            },
-            this);
     },
 
     scoreRight: function (body1, body2){
@@ -428,14 +260,6 @@ BasicGame.Game.prototype = {
         this.scoreLtxt.setText(this.scoreL);
         this.puck.kill();
         this.timer = this.time.events.loop(500, this.updateCounter, this);
-        this.computerHandle.body.x=	this.world.centerX;
-
-        this.aiTimer=	this.time.events.loop(180, function()
-            {
-                // Makes the computer giddy
-                this.computerHandle.body.y =	120 + this.rnd.integerInRange(-4, 80);
-            },
-            this);
     },
 
 
@@ -451,7 +275,6 @@ BasicGame.Game.prototype = {
         else
         {
             this.time.events.remove(this.timer);
-            this.time.events.remove(this.aiTimer);
             this.counter = Settings.TIME_TO_NEW_PUCK;
             this.ejectPuck();
             this.timerTxt.visible = false;
@@ -461,7 +284,6 @@ BasicGame.Game.prototype = {
         if(this.AllScore <= 0)
         {
             this.time.events.remove(this.timer);
-            this.time.events.remove(this.aiTimer);
             this.timerTxt.visible = false;
 
 
@@ -484,15 +306,36 @@ BasicGame.Game.prototype = {
             this.winPopup.destroy();
         }
 
-        this.winPopup = WindowManager.endBattleWindow({winner : isPlayer, yourScore : this.scoreR, enemyScore : this.scoreL, reward : isPlayer ? Settings.WIN_REWARD : 0}, this.game);
+        if(isPlayer) // увеличим количество побед
+            UserData.UpWinCounter();
+
+        this.winPopup = WindowManager.endBattleWindow(
+            {
+                winner : isPlayer,
+                yourScore : this.scoreR,
+                enemyScore : this.scoreL,
+                reward : isPlayer ? Settings.WIN_REWARD : 0,
+                OnClose : this.OnCloseResultWindow,
+                OnRestart : this.OnRestart,
+                OnRevange : this.OnRevange
+            }, this.game);
     },
 
-    replay : function()
+    OnCloseResultWindow : function(context){
+        context.state.start('MainMenu');
+    },
+
+
+    OnRestart : function(context)
     {
-        this.game.numPlayers = 1;
-        this.game.state.start('Game');
+        context.state.start('Game');
     },
 
+    // TODO хрен знает чем отличаются
+    OnRevange : function(context)
+    {
+        context.state.start('Game');
+    },
 
     ejectPuck: function(){
         this.puck.body.x = this.world.centerX;
@@ -515,6 +358,9 @@ BasicGame.Game.prototype = {
 
         if (bodies.length != 0){
 
+            if(bodies[0].parent.sprite !== this.playerSprite) return;
+
+
             pointer.handle = this.add.sprite(pointer.x, pointer.y);
             this.physics.p2.enable(pointer.handle,false);
             pointer.handle.body.setCircle(5);
@@ -532,14 +378,16 @@ BasicGame.Game.prototype = {
 
     },
     paddleMove: function(pointer, x, y, isDown) {
-        //at this point the spring is attached
         if(pointer.paddle){
-            //TODO: Keep paddle on table.
+
              pointer.handle.body.x = x;
              pointer.handle.body.y = y;
 
-            // pointer.handle.body.x +=  pointer.movementX * Settings.MONE_USER_PADDLE;
-            // pointer.handle.body.y += pointer.movementY * Settings.MONE_USER_PADDLE;
+             if(pointer.handle.body.y < this.game.world.height / 2)
+                 {
+                     pointer.handle.body.y = this.game.world.height / 2;
+                 }
+
         }
     },
 
