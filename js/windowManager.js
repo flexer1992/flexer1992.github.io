@@ -53,6 +53,7 @@ _windowManager = function () {
         windowContainer.addChild(text);
 
         var closeButton = context.add.button(0, 0, "btn_close", function () {
+            shadow.inputEnabled = false;
             container.destroy();
             if(onClose != null)
             {
@@ -86,7 +87,7 @@ _windowManager = function () {
 
         for (var i = 0; i < 4; i++) {
 
-            var button = UiFactory.CreateButton(context, "btn_green", selectSkill);
+            var button = UiFactory.CreateButton(context, "btn_green_big", selectSkill);
             button.variable = i;
 
             function selectSkill(btn) {
@@ -113,7 +114,7 @@ _windowManager = function () {
             }
 
 
-            var buttonText = UiFactory.CreateText(context, buttonLabel, 60);
+            let buttonText = UiFactory.CreateText(context, buttonLabel, 60);
             button.addChild(buttonText);
             buttonText.x = button.width / 2;
             buttonText.y = button.height / 2;
@@ -308,55 +309,36 @@ _windowManager = function () {
         return container;
     };
 
-    this.chooseBatWindow = function(context, onWinBat){
+    this.chooseBatWindow = function(context, OnClose){
         let container = this.GetBaseContainer(context, "CHOOSE BAT", null , OnCloseWindow);
 
-        //share button
-        let button = UiFactory.CreateButton(context, "btn_blue", function() {
-            OnCloseWindow();
-            container.destroy();
-            onWinBat(context);
-        } );
-
-        let buttonText = UiFactory.CreateText(context, "Win this bat!", 60);
-        button.addChild(buttonText);
-
-        buttonText.x = button.width / 2;
-        buttonText.y = button.height / 2;
-        buttonText.setShadow(2, 2, 'rgba(0,0,0,1)', 0);
-        buttonText.fill = "#FFFFFF";
-
-        button.scale.set(scaleRatio);
-
-        button.x = (container.width - button.width) / 2;
-        button.y = container.height / 2 + 450 * scaleRatio;
-        container.addChild(button);
-
-        // restart button
-        let buttonWidth = 534;
-        let buttonHeight = 184;
-
         let buttonGreen = UiFactory.CreateButton(context, "btn_green", function() {
-            console.log("buy this bat");
+            console.log("buy this bat"); // или покупка или выбор биты
+
+            let currBat = settingsBats[currentBatIndex];
+
+            // если есть то всегда выбираем биту
+            if(UserData.ContainsBat(currBat.id))
+            {
+                UserData.SetCurrentBatId(currBat.id);
+            }else{
+                // проверяем есть ли деньги, если их нет то хз, пока ничего не делаем? может алерт показать?
+                if(UserData.SpendMoney(currBat.price)){
+                    UserData.AddBat(currBat.id);
+                }else{
+                    alert( "Нет денег, магаз будет позже :(" );
+                }
+            }
+
+            drawButtons();
         });
-
-        buttonGreen.width = buttonWidth;
-        buttonGreen.height = buttonHeight;
-
-        let buttonGreenText = UiFactory.CreateText(context, "Buy", 80);
-        buttonGreenText.fill = "#0C6E1B";
-        buttonGreen.addChild(buttonGreenText);
-
-        buttonGreenText.x = buttonGreen.width / 2 + 30;
-        buttonGreenText.y = buttonGreen.height / 2 - 40;
-
 
 
         let equipLabel = UiFactory.CreateText(context, Settings.locale.EQUIP_BAT, 80);
         equipLabel.fill = "#FFFFFF";
         buttonGreen.addChild(equipLabel);
 
-        equipLabel.x = buttonGreen.width / 2 + 30;
+        equipLabel.x = buttonGreen.width / 2;
         equipLabel.y = buttonGreen.height / 2;
 
 
@@ -372,10 +354,10 @@ _windowManager = function () {
         moneyContainer.addChild(moneyText);
         moneyText.x = money_icon.width + 10;
         moneyText.y = moneyContainer.height / 2 - moneyText.height / 2;
-
         buttonGreen.addChild(moneyContainer);
+
         moneyContainer.x = buttonGreen.width / 2 - moneyContainer.width / 2;
-        moneyContainer.y = buttonGreen.height / 2 - 10;
+        moneyContainer.y = buttonGreen.height / 2 - moneyContainer.height / 2;
 
 
         let InfoUserLabel = UiFactory.CreateText(context, "Choose your bat or buy new! \n Click left and right.", 50);
@@ -390,10 +372,8 @@ _windowManager = function () {
 
 
         buttonGreen.scale.set(scaleRatio);
-        buttonGreen.width = buttonWidth * scaleRatio;
-        buttonGreen.height = buttonHeight * scaleRatio;
         buttonGreen.x = (container.width - buttonGreen.width) / 2;
-        buttonGreen.y = container.height / 2 + 200 * scaleRatio;
+        buttonGreen.y = container.height / 2 + 450 * scaleRatio;
 
 
         let currentBatIndex = 0;
@@ -413,27 +393,55 @@ _windowManager = function () {
         let sliderWidth = 800 * scaleRatio;
         let sliderHeight = 450 * scaleRatio;
 
+        // draw progress end
+        let list_bg = context.add.sprite(0,0, "list_bg");
+        list_bg.scale.set(scaleRatio);
+        container.addChild(list_bg);
+        list_bg.x = container.width / 2 - list_bg.width / 2;
+        list_bg.y = container.height / 2 - 300 * scaleRatio;
+
+
+        let purchaseLabel = UiFactory.CreateText(context, Settings.locale.BUY_BAT, 50);
+        purchaseLabel.fill = "#6F6FAC";
+        purchaseLabel.align = "center";
+
+        purchaseLabel.x = container.width / 2;
+        purchaseLabel.y = container.height / 2 + 360 * scaleRatio;
+        purchaseLabel.scale.set(scaleRatio);
+        container.addChild(purchaseLabel);
+
+
+        let nameLabel = UiFactory.CreateText(context, "NAME", 80);
+        nameLabel.fill = "#6F6FAC";
+        nameLabel.align = "center";
+
+        nameLabel.x = container.width / 2;
+        nameLabel.y = container.height / 2 + 240 * scaleRatio;
+        nameLabel.scale.set(scaleRatio);
+        container.addChild(nameLabel);
+
+
+
         for (let i = 0; i < settingsBats.length; i++)
         {
             let settingsBat = settingsBats[i];
             let group = context.add.group();
+
+            let backIcon = context.add.image(0,0, "circle_bg");
+            backIcon.tint = 0xD8D9EC;
+            group.addChild(backIcon);
+            backIcon.scale.set(scaleRatio);
+            backIcon.x = sliderWidth / 2 - backIcon.width / 2;
+            backIcon.y = sliderHeight / 2 - backIcon.height / 2;
+
             let batImage = context.add.image(0,0, settingsBat.icon);
             group.addChild(batImage);
 
-            batImage.scale.setTo(1.5 * scaleRatio);
+            batImage.scale.setTo(scaleRatio);
 
             batImage.x = sliderWidth / 2 - batImage.width/2;
-            batImage.y = 0;
+            batImage.y = sliderHeight / 2 - batImage.height / 2;
 
-            let nameLabel = UiFactory.CreateText(context, settingsBat.name, 50);
-            nameLabel.fill = "#6F6FAC";
-            nameLabel.align = "center";
-
-            group.addChild(nameLabel);
-
-            nameLabel.x = sliderWidth / 2;
-            nameLabel.y = batImage.y + batImage.height + 40 * scaleRatio;
-            nameLabel.scale.set(scaleRatio);
             listContent.push(group);
         }
 
@@ -463,6 +471,8 @@ _windowManager = function () {
 
         });
 
+
+
         // перерисовываем контейнер с кнопками
         function drawButtons() {
             if(currentBatIndex >= settingsBats.length){
@@ -475,44 +485,77 @@ _windowManager = function () {
             let currBat = settingsBats[currentBatIndex];
             moneyText.text = currBat.price;
             moneyContainer.x = (buttonGreen.width / 2) / scaleRatio - moneyContainer.width / 2;
+            nameLabel.text = currBat.name;
 
 
             if(UserData.ContainsBat(currBat.id))
             {
-                // прячем кнопку вин и вместо прайса рисуем EQUIP
-                button.alpha = 0;
-                moneyContainer.alpha = 0;
-                buttonGreenText.alpha = 0;
-                equipLabel.alpha = 1;
 
+                if(currBat.id === UserData.GetCurrentBatId())
+                {
+                    buttonGreen.loadTexture("btn_violet");
+                    equipLabel.text = Settings.locale.EQUIPPED_BAT;
+                    purchaseLabel.text = Settings.locale.Equipped_bat;
+                }else{
+
+                    buttonGreen.loadTexture("btn_green");
+                    equipLabel.text = Settings.locale.EQUIP_BAT;
+                    purchaseLabel.text = Settings.locale.Equip_bat;
+                }
+                moneyContainer.alpha = 0;
+                equipLabel.alpha = 1;
             }else {
-                button.alpha = 1;
                 equipLabel.alpha = 0;
                 moneyContainer.alpha = 1;
-                buttonGreenText.alpha = 1;
+                purchaseLabel.text = Settings.locale.BUY_BAT;
+
+                if(UserData.CurrentMoney() - currBat.price >= 0)
+                {
+                    buttonGreen.loadTexture("btn_green");
+                }else{
+                    buttonGreen.loadTexture("btn_violet");
+                }
             }
         }
 
-
         function OnCloseWindow() {
             slider.destroy();
+            OnClose();
         }
 
         container.addChild(buttonGreen);
-
-
-
         return container;
 
     };
 
 
-    this.ChooseFieldWindow = function(context){
+    this.ChooseFieldWindow = function(context, OnClose){
         let container = this.GetBaseContainer(context, "CHOOSE FIELD", null , OnCloseWindow);
 
         //share button
         let button = UiFactory.CreateButton(context, "btn_blue", function() {
-            console.log("win this bat");
+            let settingsField = settingsFields[currentFieldIndex];
+
+            // если это поле у нас уже есть
+            if(UserData.ContainsField(settingsField.id) || settingsField.starter)
+            {
+                UserData.SetCurrentField(settingsField.id);
+                drawButtons();
+                return;
+            }
+
+            let fieldProgress = UserData.GetWinCounter() / settingsField.totalWins;
+
+            // если у нас нет этого поля но мы можем его взять
+            // то берем, сетим себе и сбрасываем счетчик побед
+            if(fieldProgress >= 1)
+            {
+                UserData.AddField(settingsField.id);
+                UserData.SetCurrentField(settingsField.id);
+                UserData.ResetWinCounter();
+                drawButtons();
+            }
+
         } );
 
         let buttonText = UiFactory.CreateText(context, "Equip", 60);
@@ -527,13 +570,7 @@ _windowManager = function () {
         button.x = (container.width - button.width) / 2;
         button.y = container.height / 2 + 450 * scaleRatio;
         container.addChild(button);
-
         button.loadTexture("btn_violet");
-
-        // restart button
-        let buttonWidth = 534;
-        let buttonHeight = 184;
-
 
         let InfoUserLabel = UiFactory.CreateText(context, "Progressing the game, you open \n new fields. Click left and right.", 50);
         InfoUserLabel.fill = "#7C7CB0";
@@ -562,23 +599,23 @@ _windowManager = function () {
         {
             let settingsField = settingsFields[i];
             let group = context.add.group();
+
+            let backIcon = context.add.image(0,0, "circle_bg");
+            backIcon.tint = 0xD8D9EC;
+            group.addChild(backIcon);
+            backIcon.scale.set(scaleRatio);
+            backIcon.x = sliderWidth / 2 - backIcon.width / 2;
+            backIcon.y = sliderHeight / 2 - backIcon.height / 2;
+
+
+
             let batImage = context.add.image(0,0, settingsField.icon);
             group.addChild(batImage);
 
-            batImage.scale.setTo(1.5 * scaleRatio);
+            batImage.scale.setTo(scaleRatio);
 
-            batImage.x = sliderWidth / 2 - batImage.width/2;
-            batImage.y = 0;
-
-            let nameLabel = UiFactory.CreateText(context, settingsField.name, 50);
-            nameLabel.fill = "#6F6FAC";
-            nameLabel.align = "center";
-
-            group.addChild(nameLabel);
-
-            nameLabel.x = sliderWidth / 2;
-            nameLabel.y = batImage.y + batImage.height + 40 * scaleRatio;
-            nameLabel.scale.set(scaleRatio);
+            batImage.x = sliderWidth / 2 - batImage.width / 2;
+            batImage.y = sliderHeight / 2 - batImage.height / 2;
             listContent.push(group);
         }
 
@@ -606,12 +643,12 @@ _windowManager = function () {
         progress.scale.set(scaleRatio);
 
         progress.x = container.width / 2 - progress.width / 2;
-        progress.y = container.height / 2 + 280 * scaleRatio;
+        progress.y = container.height / 2 + 300 * scaleRatio;
 
 
         let mask = context.add.graphics(progress.x, progress.y);
         mask.beginFill(0xffffff);
-        mask.drawRect(0,0, preloadBar.width, preloadBar.height);
+        mask.drawRect(0,0, preloadBar.width * scaleRatio, preloadBar.height);
         mask.endFill();
         preloadBar.mask = mask;
         mask.scale.set(0.2, 1);
@@ -626,7 +663,25 @@ _windowManager = function () {
         container.addChild(progressTitle);
 
 
+
+         let nameLabel = UiFactory.CreateText(context, "NAME", 62);
+         nameLabel.fill = "#6F6FAC";
+         nameLabel.align = "center";
+
+
+
+         nameLabel.x = container.width / 2;
+         nameLabel.y = progress.y - 120 * scaleRatio;
+         nameLabel.scale.set(scaleRatio);
+
+        container.addChild(nameLabel);
+
         // draw progress end
+        let list_bg = context.add.sprite(0,0, "list_bg");
+        list_bg.scale.set(scaleRatio);
+        container.addChild(list_bg);
+        list_bg.x = container.width / 2 - list_bg.width / 2;
+        list_bg.y = container.height / 2 - 300 * scaleRatio;
 
         // draw list ----
         let slider = new phaseSlider(context);
@@ -661,6 +716,8 @@ _windowManager = function () {
 
             let settingsField = settingsFields[currentFieldIndex];
 
+            nameLabel.text = settingsField.name;
+
             let fieldProgress = UserData.GetWinCounter() / settingsField.totalWins;
 
             // если оно у нас и было хоть раз выбрано, то не рисуем прогрессбарчик
@@ -672,11 +729,10 @@ _windowManager = function () {
                 progressTitle.alpha = 1;
                 progress.alpha = 1;
                 progressText.text = UserData.GetWinCounter() + "/" + settingsField.totalWins;
-                mask.scale.set(fieldProgress,1);
+                mask.scale.set(fieldProgress , 1);
             }
 
-
-            if(fieldProgress < 1 && !settingsField.starter)
+            if(fieldProgress < 1 && !settingsField.starter && !UserData.ContainsField(settingsField.id))
             {
                 button.loadTexture("btn_violet");
                 button.scale.set(scaleRatio);
@@ -688,29 +744,27 @@ _windowManager = function () {
             else
             {
                 button.loadTexture("btn_green");
-
-                button.width = buttonWidth * scaleRatio;
-                button.height = buttonHeight * scaleRatio;
-
                 buttonText.text = Settings.locale.EQUIP_FIELD;
-
-                buttonText.x = (button.width / 2) / scaleRatio + buttonText.width / 4;
-                buttonText.y = (button.height / 2) / scaleRatio + buttonText.height / 6;
-
+                buttonText.x = (button.width / 2) / scaleRatio;
+                buttonText.y = (button.height / 2) / scaleRatio;
             }
 
-
-            // зеленая или серая кнопка и текст
-            if(UserData.ContainsField(settingsField.id)){
-
-            }else{
-
+            // если плашка выбрана
+            if(UserData.IsCurrentField(settingsField.id))
+            {
+                button.loadTexture("btn_violet");
+                buttonText.text = Settings.locale.EQUIPPED_FIELD;
+                buttonText.x = (button.width / 2) / scaleRatio;
+                buttonText.y = (button.height / 2) / scaleRatio;
+                return;
             }
+
         }
 
         function OnCloseWindow() {
             slider.destroy();
             mask.destroy();
+            OnClose();
         }
 
         return container;

@@ -35,7 +35,7 @@ BasicGame.MainMenu.prototype = {
         money_icon.y = (moneyBg.height - money_icon.height) / 2;
         money_icon.x = 10;
 
-        // TODO передавать значение в текстовое поле что хотим отрисовать
+        // // TODO передавать значение в текстовое поле что хотим отрисовать
         var text = this.add.text(0, 0, "99999", {font: "70px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);
 
@@ -58,29 +58,15 @@ BasicGame.MainMenu.prototype = {
 
     drawBackground : function()
     {
-        var back = this.add.sprite(0,0, "main_bg");
+        let back = this.add.sprite(0,0, "main_bg");
         back.width = this.world.width;
         back.height = this.world.height;
 
-        // //draw cloud
-        var cloudLeft = this.add.sprite(0,0,"cloud_2");
-        cloudLeft.y = this.world.height - cloudLeft.height;
-
-        cloudLeft.tint = 0x82befa;
-
-        var cloudright = this.add.sprite(0,0, "cloud_1");
-        cloudright.x = this.world.width - cloudright.width;
-        cloudright.y = this.world.height - cloudright.height;
-
-        cloudright.tint = 0x82befa;
-        //
-        // // draw logo
-        var logo = this.add.sprite(0,0, "logo");
-
+        let logo = this.add.sprite(0,0, "logo");
         logo.scale.set(scaleRatio);
 
         logo.x = (this.world.width - logo.width) * 0.5;
-        logo.y = logo.height / 4;
+        logo.y = 200 * scaleRatio;
 
     },
 
@@ -91,36 +77,27 @@ BasicGame.MainMenu.prototype = {
 
         let chooseField = this.game.add.group();
 
-        let button_back = this.add.button(0,0, "main_btn", this.selectFieldButtonClick, this);
-        button_back.scale.set(-1, 1);
-
+        let button_back = this.add.button(0,0, "main_btn_left", this.selectFieldButtonClick, this);
         chooseField.add(button_back);
-
-        button_back.y =  0;
-        button_back.x = -button_back.width/2 - 100;
 
 
         this.fieldImage = this.add.sprite(0,0, "soccer_field");
 
-        chooseField.add(this.fieldImage);
-        // this.fieldImage.x = chooseField.width - this.fieldImage.width + 10;
-        this.fieldImage.x = -chooseField.width / 2 + this.fieldImage.width / 2 - 20;
-        this.fieldImage.y = chooseField.height / 2 - this.fieldImage.height / 2- 4;
+        chooseField.addChild(this.fieldImage);
+        this.fieldImage.x = chooseField.width / 2 - this.fieldImage.width / 2;
+        this.fieldImage.y = chooseField.height / 2 - this.fieldImage.height / 2- 10;
 
         let item_name = this.add.text(0, 0, Settings.locale.SELECT_LABEL, {font: "50px officina_sans", fill: "#E14B1A"});
         item_name.anchor.set(0.5, 0.5);
-        item_name.scale.set(-1,1);
+        chooseField.addChild(item_name);
 
-        button_back.addChild(item_name);
-
-        item_name.x = -button_back.width / 2;
-        item_name.y = button_back.height - item_name.height;
-
+        item_name.x = button_back.width/2;
+        item_name.y = chooseField.height - 1.4 * item_name.height;
 
         chooseField.scale.set(scaleRatio);
 
-        chooseField.x = this.world.width / 2 -  180 * scaleRatio;//- chooseField.width / 2 + 60* scaleRatio;
-        chooseField.y = this.world.height / 2 - chooseField.height / 4;
+        chooseField.x = this.world.width / 2 - chooseField.width - 40 * scaleRatio;//- chooseField.width / 2 + 60* scaleRatio;
+        chooseField.y = this.world.height / 2 - chooseField.height / 4 - 36 * scaleRatio;
 
         this.updateFieldInfo();
     },
@@ -137,8 +114,16 @@ BasicGame.MainMenu.prototype = {
 
     selectFieldButtonClick : function()
     {
-        console.log('select field button click');
-        WindowManager.ChooseFieldWindow(this.game);
+        WindowManager.ChooseFieldWindow(this.game, function(){
+            game.state.getCurrentState().self.UpdateScreen();
+        });
+    },
+
+    // TODO обновление данных на всем окне
+    UpdateScreen : function(){
+        this.updateFieldInfo();
+        this.updateBatInfo();
+        this.updateMoneyInfo();
     },
 
     //TODO учитывать выбранную пользователем биту
@@ -146,21 +131,15 @@ BasicGame.MainMenu.prototype = {
     {
         let chooseField = this.game.add.group();
 
-        let button_back = this.add.button(0,0, "main_btn", this.selectButButton, this);
+        let button_back = this.add.button(0,0, "main_btn_right", this.selectButButton, this);
 
         chooseField.add(button_back);
 
-        button_back.y = 0;
-        button_back.x = -button_back.width/2;
-
-        chooseField.x = this.world.width / 2 + button_back.width / 2 + 30;
-        chooseField.y = this.world.height / 2 - chooseField.height / 4;
-
         this.batImage = this.add.sprite(0,0, "hockey_bat_blue");
-
         chooseField.add(this.batImage);
-        this.batImage.x = -chooseField.width / 2 + this.batImage.width / 2 + 10;
-        this.batImage.y = chooseField.height / 2 - this.batImage.height / 2- 4;
+
+        this.batImage.x = chooseField.width / 2 - this.batImage.width / 2 ;
+        this.batImage.y = chooseField.height / 2 - this.batImage.height / 2 - 10;
 
         let item_name = this.add.text(0, 0, Settings.locale.SELECT_LABEL, {font: "50px officina_sans", fill: "#E14B1A"});
         item_name.anchor.set(0.5, 0.5);
@@ -172,8 +151,8 @@ BasicGame.MainMenu.prototype = {
 
         chooseField.scale.set(scaleRatio);
 
-        chooseField.x = this.world.width / 2 + chooseField.width / 2 + 60* scaleRatio;
-        chooseField.y = this.world.height / 2 - chooseField.height / 4;
+        chooseField.x = this.world.width / 2 + 50 * scaleRatio;
+        chooseField.y = this.world.height / 2 - chooseField.height / 4 - 36 * scaleRatio;
 
         this.updateBatInfo();
     },
@@ -181,12 +160,14 @@ BasicGame.MainMenu.prototype = {
     selectButButton : function()
     {
         console.log("select bat button click");
-        WindowManager.chooseBatWindow(this.game, this.startGame);
+        WindowManager.chooseBatWindow(this.game, function(){
+            game.state.getCurrentState().self.UpdateScreen();
+        });
     },
 
     createPlayButton : function()
     {
-        this.playButton = this.add.button(this.world.centerX, this.world.centerY + 400 *scaleRatio, 'btn_green', this.startGame, this);
+        this.playButton = this.add.button(this.world.centerX, this.world.centerY + 400 *scaleRatio, 'btn_green_big', this.startGame, this);
         this.playButton.x -= (this.playButton.width / 2) * scaleRatio;
         var text = this.add.text(0, 0, "Play!", {font: "80px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);

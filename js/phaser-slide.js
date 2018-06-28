@@ -365,10 +365,12 @@ phaseSlider = function (game) {
                 _this.chevronLeft = {};
 
                 if (_this.options._customHandleNext === "") {
-                    _this.chevronRight = game.add.image(0, 0, "slider_chevron_right");
+                    _this.chevronRight = game.add.sprite(0, 0, "slider_chevron_right");
                     _this.chevronRight.scale.setTo(0.6, 0.6);
+                    //_this.chevronRight.scale.setTo(scaleRatio);
                 } else {
                     _this.chevronRight = game.add.image(0, 0, _this.options._customHandleNext);
+                    _this.chevronRight.scale.setTo(scaleRatio);
                 }
                 _this.chevronRight.x = _this.options._width - (_this.chevronRight.width + 10); //_this.options._x+_this.options._width - (chevronRight.width+10);
                 _this.chevronRight.y = (_this.options._height / 2) - _this.chevronRight.height / 2;
@@ -400,6 +402,7 @@ phaseSlider = function (game) {
                     _this.chevronLeft.scale.setTo(0.6, 0.6);
                 } else {
                     _this.chevronLeft = game.add.image(0, 0, _this.options._customHandlePrev);
+                    _this.chevronLeft.scale.setTo(scaleRatio);
                 }
                 _this.chevronLeft.x = 10;
                 _this.chevronLeft.y = (_this.options._height / 2) - _this.chevronLeft.height / 2;

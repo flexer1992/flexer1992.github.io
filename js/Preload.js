@@ -23,7 +23,7 @@ BasicGame.Preloader.prototype = {
         logo.scale.set(scaleRatio, scaleRatio);
 
         logo.x = (this.world.width - logo.width) / 2;
-        logo.y = logo.height / 2;
+        logo.y = 200 * scaleRatio;
 
 
         var preloader_bg = this.add.sprite(0, 0, "prbar_bg");
@@ -78,7 +78,6 @@ BasicGame.Preloader.prototype = {
 
         //Todo: pause a bit
         this.state.start('MainMenu');
-
         /*
         if (this.cache.isSoundDecoded('titleMusic') && this.ready == false)
         {

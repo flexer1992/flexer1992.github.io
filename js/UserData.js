@@ -3,12 +3,12 @@ userData = function userData() {
 
     let _this = this;
     let bats = [1]; // список бит юзера
-    let defaulBat = 3; // текущая выбранная бита юзера
+    let defaulBat = 1; // текущая выбранная бита юзера
     let money = 1000;
 
     let fields = [1];
-    let currentField = 4;
-    let winsCount = 5; // счетчик побед пользователя, который будет сбрасываться после того как чел получит поле
+    let currentField = 1;
+    let winsCount = 20; // счетчик побед пользователя, который будет сбрасываться после того как чел получит поле
     let currentSkill;
 
     //TODO скорее всего надо будет для получения информации по игре
@@ -57,6 +57,13 @@ userData = function userData() {
         }
 
         return null;
+    };
+
+    /**
+     * @return {number}
+     */
+    this.GetCurrentBatId = function(){
+        return defaulBat;
     };
 
     /**
@@ -173,6 +180,27 @@ userData = function userData() {
     this.GetCurrentBot = function(){
         return Settings.bot[currentSkill];
     };
+
+
+    this.SetCurrentField = function(fieldId)
+    {
+        currentField = fieldId;
+    };
+
+    /**
+     * @return {boolean}
+     */
+    this.IsCurrentField = function(fieldId)
+    {
+        return currentField === fieldId;
+    };
+
+    this.ResetWinCounter = function()
+    {
+        winsCount = 0;
+    }
+
+
 };
 
 let UserData = new userData();

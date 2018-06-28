@@ -2,7 +2,7 @@ var Settings = {};
 
 Settings.TIME_TO_NEW_PUCK = 5;  // время в секундах до пофвления нового шарика после забивания кем-то из игроков
 Settings.COUNT_TO_WIN = 6; // количество очков в игре всего
-Settings.RESTITUTION = 0.4; // отскок любых тел от любых пока единственный физический параметр что мы можем регулировать
+Settings.RESTITUTION = 0.3; // отскок любых тел от любых пока единственный физический параметр что мы можем регулировать
 
 // для настройки колайдеров в воротах
 Settings.SHOW_GATE_COLLIDERS = true;
@@ -27,17 +27,26 @@ Settings.locale.REPLAY_BUTTON = "Replay";
 Settings.locale.YOUR_SCORE = "Your score:";
 Settings.locale.YOUR_REWARD = "Your reward:";
 
-Settings.locale.EQUIP_FIELD = "Equip";
-Settings.locale.EQUIP_BAT = "Equip";
+Settings.locale.EQUIP_FIELD = "Equip!";
+Settings.locale.EQUIPPED_FIELD = "Equipped";
+
+Settings.locale.EQUIP_BAT = "Equip!";
+Settings.locale.EQUIPPED_BAT = "Equipped";
+
 Settings.locale.LOCKED_FIELD = "Locked";
 
 Settings.locale.SELECT_LABEL = "SELECT";
+Settings.locale.BUY_BAT = "Purchase bat";
+
+Settings.locale.Equip_bat = "Equip bat";
+Settings.locale.Equipped_bat = "Equipped bat";
 
 
 // ресурсы что загружаются для использования в прелоадере
 // потом они шарятся везде
 Settings.firstPreloaded = {
-    "main_bg": "asset/new_assets/bg.jpg",
+
+    "main_bg": "asset/new_assets/menu_bg.jpg",
     "logo": "asset/new_assets/logo.png",
     "prbar_bg": "asset/new_assets/prbar_bg.png",
     "prbar_color": "asset/new_assets/prbar_color.png"
@@ -45,12 +54,15 @@ Settings.firstPreloaded = {
 
 // указываем имя ресурса и его путь что бы можно было грузить автоматом и больше не лазить в код загрузчика
 Settings.resources = {
-    "cloud_1": "asset/new_assets/cloud_1.png",
-    "cloud_2": "asset/new_assets/cloud_2.png",
+
     "money_bg": "asset/new_assets/money_bg.png",
     "icon_coin": "asset/new_assets/icon_coin.png",
-    "main_btn": "asset/new_assets/main_btn.png",
-    "btn_green": "asset/new_assets/btn_green.png",
+    "main_btn_left": "asset/new_assets/main_menu_left.png",
+    "main_btn_right": "asset/new_assets/main_menu_right.png",
+
+
+    "btn_green": "asset/new_assets/btn_green_normal.png",
+    "btn_green_big": "asset/new_assets/btn_green.png",
     "btn_blue": "asset/new_assets/btn_blue.png",
     "btn_violet": "asset/new_assets/btn_violet.png",
     "btn_yellow": "asset/new_assets/btn_yellow.png",
@@ -91,6 +103,7 @@ Settings.resources = {
     "puck_neon" :  "asset/new_assets/fields/puck_neon.png",
     "puck_soccer" :  "asset/new_assets/fields/puck_soccer.png",
     "soccer_field" :  "asset/new_assets/fields/soccer_field.png",
+    "list_bg" :  "asset/new_assets/llist_back.jpg",
 };
 
 Settings.bats = [
@@ -112,7 +125,7 @@ Settings.bats = [
     {
         id: 3,
         icon: "captn_bat_blue",
-        price: 3000,
+        price: 999,
         name: "captn blue",
         isPlayer : true,
         enemyId : 4

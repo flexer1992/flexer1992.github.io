@@ -226,8 +226,7 @@ BasicGame.Game.prototype = {
         {
             this.isFirstTimeInOpponentsHalf = true;
 
-            movementSpeed = UserData.GetRandomFloat(this.bot.MovementSpeed * 0.4, this.bot.MovementSpeed);
-
+            movementSpeed = this.bot.MovementSpeed;
             targetX = UserData.Clamp(puckX, this.bot.playerBoundary.Left * scaleRatio, this.bot.playerBoundary.Right * scaleRatio);
             targetY = UserData.Clamp(puckY, this.bot.playerBoundary.Down * scaleRatio, this.bot.playerBoundary.Up * scaleRatio);
         }
