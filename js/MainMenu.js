@@ -59,8 +59,9 @@ BasicGame.MainMenu.prototype = {
     drawBackground : function()
     {
         let back = this.add.sprite(0,0, "main_bg");
-        back.width = this.world.width;
-        back.height = this.world.height;
+        back.scale.set(scaleRatio);
+        back.x = this.world.width / 2 - back.width / 2;
+        back.y = this.world.height / 2 - back.height / 2;
 
         let logo = this.add.sprite(0,0, "logo");
         logo.scale.set(scaleRatio);
