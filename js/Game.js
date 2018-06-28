@@ -64,8 +64,37 @@ BasicGame.Game.prototype = {
             Settings.PLAYER_GATE_COLLIDER_OFFSET_X * scaleRatio, Settings.PLAYER_GATE_COLLIDER_OFFSET_Y * scaleRatio);
 
 
+
+        // draw lines
+        let bigRadius = 800 * scaleRatio;
+
+        let linePadding = 240 * scaleRatio;
+        let addedLine = 80 * scaleRatio;
+
+        graphics.moveTo(0, this.world.height / 2);
+        graphics.lineTo(this.world.width /2 - bigRadius / 2 ,this.world.height / 2);
+
+        graphics.moveTo(this.world.width /2 + bigRadius / 2, this.world.height / 2);
+        graphics.lineTo(this.world.width, this.world.height / 2);
+
+        graphics.moveTo(0, this.world.height / 2 - linePadding);
+        graphics.lineTo(this.world.width /2 - bigRadius / 2 + addedLine ,this.world.height / 2 - linePadding);
+
+        graphics.moveTo(0, this.world.height / 2 + linePadding);
+        graphics.lineTo(this.world.width /2 - bigRadius / 2 + addedLine ,this.world.height / 2 + linePadding);
+
+
+        graphics.moveTo(this.world.width /2 + bigRadius / 2 - addedLine, this.world.height / 2 - linePadding);
+        graphics.lineTo(this.world.width ,this.world.height / 2 - linePadding);
+
+        graphics.moveTo(this.world.width /2 + bigRadius / 2 - addedLine, this.world.height / 2 + linePadding);
+        graphics.lineTo(this.world.width ,this.world.height / 2 + linePadding);
+
+        // end draw lines
+
+
         // отрисовка блоков с кругами
-        this.drawCircles(graphics, this.world.width / 2, this.world.height / 2, 500 * scaleRatio, 800 * scaleRatio);
+        this.drawCircles(graphics, this.world.width / 2, this.world.height / 2, 500 * scaleRatio, bigRadius);
 
         this.drawCircles(graphics, this.world.width/ 6, this.world.height / 6, 80 * scaleRatio, 260 * scaleRatio);
         this.drawCircles(graphics, (this.world.width - this.world.width/ 6), this.world.height / 6, 80 * scaleRatio, 260 * scaleRatio);
