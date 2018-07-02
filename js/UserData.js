@@ -195,12 +195,6 @@ userData = function userData() {
         return currentField === fieldId;
     };
 
-    this.ResetWinCounter = function()
-    {
-        winsCount = 0;
-    }
-
-
 };
 
 let UserData = new userData();

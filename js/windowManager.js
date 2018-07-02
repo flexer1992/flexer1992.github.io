@@ -9,7 +9,7 @@ _windowManager = function () {
 
 
     //вернет бвзовую структуру для окна
-    this.GetBaseContainer = function (context, title, type, onClose) {
+    this.GetBaseContainer = function (context, title, type, onClose, footer) {
         var container = context.add.group();
 
         var shadow = context.add.tileSprite(0, 0, context.width, context.height, 'field_biege');
@@ -44,10 +44,10 @@ _windowManager = function () {
         windowContainer.y = (container.height - windowContainer.height) / 2;
 
         // build title
-        var text = context.add.text(0, 0, title, {font: "60px officina_sans", fill: "#ffffff"});
+        var text = context.add.text(0, 0, title, {font: "70px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);
         text.x = windowContainer.width / 2;
-        text.y = 90 * scaleRatio;
+        text.y = 100 * scaleRatio;
         text.setShadow(2, 2, 'rgba(0,0,0,1)', 0);
         text.scale.set(scaleRatio);
         windowContainer.addChild(text);
@@ -69,12 +69,21 @@ _windowManager = function () {
         closeButton.x = windowContainer.width - closeButton.width * 2;
         closeButton.y = closeButton.height + 10;
 
+        if(footer)
+        {
+            let footer = context.add.sprite(0,0,"footer");
+            footer.scale.set(scaleRatio);
+            windowContainer.addChild(footer);
+            footer.x = windowContainer.width/ 2 - footer.width / 2;
+            footer.y = windowContainer.height - footer.height;
+        }
+
         return container;
     };
 
 
     this.DifficultyWindow = function (context, action) {
-        var container = this.GetBaseContainer(context, "CHOOSE DIFFICULTY");
+        var container = this.GetBaseContainer(context, "CHOOSE DIFFICULTY", null, null, true);
 
         var infoText = UiFactory.CreateText(context, "Choose how cool your skills are!", 50);
         infoText.scale.set(scaleRatio);
@@ -143,9 +152,9 @@ _windowManager = function () {
 
         if(params.winner)
         {
-            container = this.GetBaseContainer(context, "VICTORY!", "green", OnCloseWindow);
+            container = this.GetBaseContainer(context, "VICTORY!", "green", OnCloseWindow, true);
         }else {
-            container = this.GetBaseContainer(context, "DEFEAT!", "red", OnCloseWindow);
+            container = this.GetBaseContainer(context, "DEFEAT!", "red", OnCloseWindow, true);
         }
 
         var infoText = UiFactory.CreateText(context, "Score:", 50);
@@ -310,7 +319,7 @@ _windowManager = function () {
     };
 
     this.chooseBatWindow = function(context, OnClose){
-        let container = this.GetBaseContainer(context, "CHOOSE BAT", null , OnCloseWindow);
+        let container = this.GetBaseContainer(context, "CHOOSE BAT", null , OnCloseWindow, true);
 
         let buttonGreen = UiFactory.CreateButton(context, "btn_green", function() {
             console.log("buy this bat"); // или покупка или выбор биты
@@ -530,7 +539,7 @@ _windowManager = function () {
 
 
     this.ChooseFieldWindow = function(context, OnClose){
-        let container = this.GetBaseContainer(context, "CHOOSE FIELD", null , OnCloseWindow);
+        let container = this.GetBaseContainer(context, "CHOOSE FIELD", null , OnCloseWindow, true);
 
         //share button
         let button = UiFactory.CreateButton(context, "btn_blue", function() {
@@ -552,7 +561,6 @@ _windowManager = function () {
             {
                 UserData.AddField(settingsField.id);
                 UserData.SetCurrentField(settingsField.id);
-                UserData.ResetWinCounter();
                 drawButtons();
             }
 
@@ -773,7 +781,7 @@ _windowManager = function () {
     // показать окно гачи
     this.ShowGatchaWindow = function(context){
 
-        var container = this.GetBaseContainer(context, "GATCHA!", null, OnCLose);
+        var container = this.GetBaseContainer(context, "GATCHA!", null, OnCLose, true);
 
         //share button
         var button = UiFactory.CreateButton(context, "btn_blue", function() {
@@ -900,6 +908,128 @@ _windowManager = function () {
         }
 
         return container;
+    };
+
+    this.ShowShopButton = function(context, OnClose){
+        let container = this.GetBaseContainer(context, "SHOP", null , OnCloseWindow);
+        
+        function OnCloseWindow() {
+            
+        }
+
+        let moneyBg = context.add.sprite(0,0,"money_bg");
+        moneyBg.tint = 0x8183B0;
+        let money_icon = context.add.sprite(0,0, "icon_coin");
+        moneyBg.addChild(money_icon);
+        money_icon.y = (moneyBg.height - money_icon.height) / 2;
+        money_icon.x = 10;
+
+        // // TODO передавать значение в текстовое поле что хотим отрисовать
+        let text = context.add.text(0, 0, "99999", {font: "70px officina_sans", fill: "#ffffff"});
+        text.anchor.set(0.5, 0.5);
+
+        text.x = moneyBg.width / 2 + money_icon.width / 4;
+        text.y = moneyBg.height / 2;
+        moneyBg.addChild(text);
+
+        text.text = UserData.CurrentMoney();
+
+        moneyBg.scale.set(scaleRatio);
+        moneyBg.x = (container.width - moneyBg.width) / 2;
+        moneyBg.y = container.height / 2 - 450 * scaleRatio;
+
+        container.addChild(moneyBg);
+
+        // рисуем блок магазина
+        let startPositon = container.height / 2 - 300 * scaleRatio;
+        let distanceBetweenItems = 190 * scaleRatio;
+
+        for(let i =0 ; i < 5; i++){
+
+            let item = context.add.sprite(0,0,"shop_item_bg");
+
+            // add button
+            let shopButton = UiFactory.CreateButton(context, "shop_button", OnShopButtonClick);
+            shopButton.variable = i;
+
+            item.addChild(shopButton);
+            shopButton.y = item.height / 2 - shopButton.height / 2;
+            shopButton.x = item.width - shopButton.width - 10 * scaleRatio;
+
+            //draw button content
+
+            if(i === 0)
+            {
+                // fb like
+                let fb = context.add.sprite(0,0,"like_us");
+                shopButton.addChild(fb);
+                fb.x = shopButton.width / 2 - fb.width;
+                fb.y = shopButton.height / 2 - fb.height / 2;
+                let likeText = UiFactory.CreateText(context, "LIKE\nUS!", 50);
+                likeText.setShadow(2, 2, 'rgba(0,0,0,1)', 0);
+                likeText.lineSpacing = -10;
+                likeText.fill = "#FFFFFF";
+                likeText.align = "left";
+                likeText.anchor.set(0, 0);
+
+                likeText.x = shopButton.width / 2 + 20 * scaleRatio;
+                likeText.y = shopButton.height/ 2 - likeText.height / 2;
+                shopButton.addChild(likeText);
+
+
+            }else {
+
+                let priceText = UiFactory.CreateText(context, "$ " + Settings.shop[i].price , 70);
+                priceText.anchor.set(0, 0);
+                priceText.fill = "#FFFFFF";
+                priceText.setShadow(2, 2, 'rgba(0,0,0,1)', 0);
+
+                priceText.x = shopButton.width / 2 - priceText.width / 2;
+                priceText.y = shopButton.height/ 2 - priceText.height / 2;
+                shopButton.addChild(priceText);
+
+            }
+
+
+            //-------------------
+
+            let icon = context.add.sprite(0,0,Settings.shop[i].icon);
+            item.addChild(icon);
+            icon.y = item.height / 2 - icon.height / 2;
+
+            let titleBack = UiFactory.CreateText(context, Settings.shop[i].title, 86);
+            titleBack.fill = "#FFFFFF";
+            titleBack.align = "left";
+            titleBack.anchor.set(0, 0);
+            titleBack.x = 300 *scaleRatio;
+            titleBack.y = 20 * scaleRatio;
+
+            titleBack.stroke = '#6f71a5';
+            titleBack.strokeThickness = 10;
+
+            let infoBack = UiFactory.CreateText(context, Settings.shop[i].info, 60);
+            infoBack.fill = "#6F71A5";
+            infoBack.align = "left";
+            infoBack.anchor.set(0, 0);
+            infoBack.x = 300 *scaleRatio;
+            infoBack.y = 140 * scaleRatio;
+
+            item.addChild(titleBack);
+            item.addChild(infoBack);
+
+
+            item.scale.set(scaleRatio);
+            item.x = container.width / 2 - item.width / 2;
+            item.y = startPositon + i * distanceBetweenItems;
+            container.addChild(item);
+        }
+
+        // обрабатываем в зависимости от индекса
+        function OnShopButtonClick(btn)
+        {
+            console.log("click button with value : " + btn.variable);
+        }
+
     };
 
 };

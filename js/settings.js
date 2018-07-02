@@ -104,6 +104,17 @@ Settings.resources = {
     "puck_soccer" :  "asset/new_assets/fields/puck_soccer.png",
     "soccer_field" :  "asset/new_assets/fields/soccer_field.png",
     "list_bg" :  "asset/new_assets/llist_back.jpg",
+    "money_back" :  "asset/new_assets/money_back.png",
+    "plus_btn" :  "asset/new_assets/plus_btn.png",
+    "shop_button" :  "asset/new_assets/shop_button.png",
+    "shop_item_bg" :  "asset/new_assets/shop_item_bg.png",
+    "footer" :  "asset/new_assets/popup_footer.png",
+
+    "gold1" :  "asset/new_assets/gold1.png",
+    "gold2" :  "asset/new_assets/gold2.png",
+    "gold3" :  "asset/new_assets/gold3.png",
+    "no_ads" :  "asset/new_assets/ads_free.png",
+    "like_us" :  "asset/new_assets/like_us.png",
 };
 
 Settings.bats = [
@@ -267,4 +278,41 @@ Settings.bot = [
             Up : 180
         }
     },
+];
+
+Settings.shop = [
+    {
+        count : 500,
+        title : "500",
+        info : "FREE GOLD",
+        icon : "gold1"
+    },
+    {
+        count : 500,
+        title : "NO ADS",
+        info : "FOREVER",
+        price : 0.99,
+        icon : "no_ads"
+    },
+    {
+        count : 100,
+        title : "100 +",
+        info : "NO ADS",
+        price : 0.99,
+        icon : "gold1"
+    },
+    {
+        count : 400,
+        title : "400 +",
+        info : "NO ADS",
+        price : 1.99,
+        icon : "gold2"
+    },
+    {
+        count : 900,
+        title : "900 +",
+        info : "NO ADS",
+        price : 2.99,
+        icon : "gold3"
+    }
 ];

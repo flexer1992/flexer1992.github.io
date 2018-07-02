@@ -26,9 +26,7 @@ BasicGame.MainMenu.prototype = {
 
     drawMoneyContainer : function()
     {
-        var moneyBg = this.add.sprite(0,0,"money_bg");
-
-        moneyBg.tint = 0x042C66;
+        var moneyBg = this.add.sprite(0,0,"money_back");
 
         var money_icon = this.add.sprite(0,0, "icon_coin");
         moneyBg.addChild(money_icon);
@@ -39,17 +37,30 @@ BasicGame.MainMenu.prototype = {
         var text = this.add.text(0, 0, "99999", {font: "70px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);
 
-        text.x = moneyBg.width / 2 + money_icon.width / 2;
+        text.x = moneyBg.width / 2;
         text.y = moneyBg.height / 2;
         moneyBg.addChild(text);
 
         this.moneyText = text;
 
+        let shopButton = this.add.button(0,0, "plus_btn", this.ShopButtonListener, this);
+        moneyBg.addChild(shopButton);
+        shopButton.y = moneyBg.height / 2 - shopButton.height / 2;
+        shopButton.x = moneyBg.width - shopButton.width - 12 * scaleRatio;
+
         moneyBg.scale.set(scaleRatio);
         moneyBg.x = (this.world.width - moneyBg.width) / 2;
         moneyBg.y = 650 * scaleRatio;
 
+        //
+
+
         this.updateMoneyInfo();
+    },
+
+    ShopButtonListener : function()
+    {
+        WindowManager.ShowShopButton(this.game);
     },
 
     updateMoneyInfo : function(){
