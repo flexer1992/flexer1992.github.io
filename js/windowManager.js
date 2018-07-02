@@ -1001,21 +1001,26 @@ _windowManager = function () {
             titleBack.fill = "#FFFFFF";
             titleBack.align = "left";
             titleBack.anchor.set(0, 0);
-            titleBack.x = 300 *scaleRatio;
-            titleBack.y = 20 * scaleRatio;
-
             titleBack.stroke = '#6f71a5';
             titleBack.strokeThickness = 10;
+
+            item.addChild(titleBack);
+            titleBack.x = 200;
+            titleBack.y = 10;
+
+
 
             let infoBack = UiFactory.CreateText(context, Settings.shop[i].info, 60);
             infoBack.fill = "#6F71A5";
             infoBack.align = "left";
             infoBack.anchor.set(0, 0);
-            infoBack.x = 300 *scaleRatio;
-            infoBack.y = 140 * scaleRatio;
-
-            item.addChild(titleBack);
             item.addChild(infoBack);
+
+            infoBack.x = 200;
+            infoBack.y = 100;
+
+
+
 
 
             item.scale.set(scaleRatio);
