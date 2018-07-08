@@ -12,7 +12,8 @@ BasicGame.MainMenu = function (game) {
     this.fieldImage = {};
     this.interval = {};
     this.gatchaTimer = {};
-
+    this.batSticker = {};
+    this.fieldSticker = {};
 };
 
 BasicGame.MainMenu.prototype = {
@@ -114,17 +115,99 @@ BasicGame.MainMenu.prototype = {
         chooseField.x = this.world.width / 2 - chooseField.width - 40 * scaleRatio;//- chooseField.width / 2 + 60* scaleRatio;
         chooseField.y = this.world.height / 2 - chooseField.height / 4 - 36 * scaleRatio;
 
+
+        this.fieldSticker = this.game.add.sprite(0,0,"sticker");
+        chooseField.addChild(this.fieldSticker);
+        this.fieldSticker.x = 0;
+        this.fieldSticker.y = -20 * scaleRatio;
+
         this.updateFieldInfo();
     },
 
     updateFieldInfo : function(){
         let curField = UserData.GetCurrentField();
         this.fieldImage.loadTexture(curField.icon);
+
+        this.fieldSticker.alpha = 0;
+
+        let isCanOpenField = false; // красненький
+        let isViewedField = false;
+
+        for (let i = 1; i < Settings.fields.length ; i++)
+        {
+            if(!UserData.ContainsField(Settings.fields[i].id))
+            {
+                if(UserData.GetWinCounter() >= Settings.fields[i].totalWins){
+                    isCanOpenField = true;
+                }
+            }else{
+                if(UserData.data.usesFields.indexOf(Settings.fields[i].id) === -1)
+                {
+                    isViewedField = true;
+                }
+            }
+        }
+
+        if(isCanOpenField){
+            this.fieldSticker.loadTexture("stickerMain");
+            this.fieldSticker.alpha = 1;
+            return;
+        }
+
+        if(isViewedField){
+            this.fieldSticker.loadTexture("sticker");
+            this.fieldSticker.alpha = 1;
+        }
+
     },
 
     updateBatInfo : function(){
         let curBat = UserData.GetCurrentBat();
         this.batImage.loadTexture(curBat.icon);
+        this.batSticker.alpha = 0;
+
+        let settingsBats =[];
+
+        for(let i = 0; i < Settings.bats.length; i++)
+        {
+            if(Settings.bats[i].isPlayer)
+            {
+                settingsBats.push(Settings.bats[i]);
+            }
+        }
+
+        // если доступны и не проспотрены
+        let isAccess = false; // для красного стикера
+        let isNoUses = false;
+        for (let i = 0 ; i < settingsBats.length; i++)
+        {
+            if(!UserData.ContainsBat(settingsBats[i].id))
+            {
+                if(UserData.CurrentMoney() - settingsBats[i].price >= 0)
+                {
+                    isAccess = true;
+                }
+            }
+            else
+            {
+                // если есть но не использованы? то синий
+                if(UserData.data.usesBats.indexOf(settingsBats[i].id) === -1)
+                {
+                    isNoUses = true;
+                }
+            }
+        }
+
+        if(isAccess){
+            this.batSticker.loadTexture("stickerMain");
+            this.batSticker.alpha = 1;
+            return;
+        }
+
+        if(isNoUses){
+            this.batSticker.loadTexture("sticker");
+            this.batSticker.alpha = 1;
+        }
     },
 
     selectFieldButtonClick : function()
@@ -168,6 +251,11 @@ BasicGame.MainMenu.prototype = {
 
         chooseField.x = this.world.width / 2 + 50 * scaleRatio;
         chooseField.y = this.world.height / 2 - chooseField.height / 4 - 36 * scaleRatio;
+
+        this.batSticker = this.game.add.sprite(0,0,"sticker");
+        chooseField.addChild(this.batSticker);
+        this.batSticker.x = chooseField.width - this.batSticker.width;
+        this.batSticker.y = -20 * scaleRatio;
 
         this.updateBatInfo();
     },

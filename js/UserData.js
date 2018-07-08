@@ -7,13 +7,17 @@ userData = function userData() {
         money : 1000,
         fields : [1],
         currentField : 1,
-        winsCount : 0,
+        winsCount : 5, //TODO убрать
         currentSkill : 0,
         gatcha : {
             countOpen : 0, // количество открытий
             endCooldown : 0,
             isLastSkipped : false
-        }
+        },
+        arrowStickersBats : [], // надо для логики стикеров на стрелках
+        usesBats : [1], // использованые биты
+        viewFields : [1],
+        usesFields : [1]
     };
 
     this.Init = function () {
@@ -56,6 +60,10 @@ userData = function userData() {
     this.SetCurrentBatId = function (batId) {
         if (this.data.bats.indexOf(batId) !== -1) {
             this.data.defaulBat = batId;
+            if(this.data.usesBats.indexOf(batId) === -1)
+            {
+                this.data.usesBats.push(batId);
+            }
             this.SaveData();
         } else {
             throw new Error("user havent bat : " + batId);
@@ -209,6 +217,10 @@ userData = function userData() {
     this.SetCurrentField = function(fieldId)
     {
         this.data.currentField = fieldId;
+
+        if(this.data.usesFields.indexOf(fieldId) === -1)
+            this.data.usesFields.push(fieldId);
+
         this.SaveData();
     };
 

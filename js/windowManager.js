@@ -397,7 +397,6 @@ _windowManager = function () {
         let currentBatIndex = 0;
 
         let listContent = [];
-        let userBats = UserData.GetUserBats();
         let settingsBats =[];
 
         for(let i = 0; i < Settings.bats.length; i++)
@@ -417,6 +416,15 @@ _windowManager = function () {
         container.addChild(list_bg);
         list_bg.x = container.width / 2 - list_bg.width / 2;
         list_bg.y = container.height / 2 - 300 * scaleRatio;
+
+        let arrowSticker = context.add.sprite(0,0,"sticker");
+        arrowSticker.scale.set(scaleRatio);
+        container.addChild(arrowSticker);
+        arrowSticker.x = container.width / 2 - arrowSticker.width / 2 + 340 * scaleRatio;
+        arrowSticker.y = container.height / 2 - arrowSticker.height / 2 - 200 * scaleRatio;
+
+
+
 
 
         let purchaseLabel = UiFactory.CreateText(context, Settings.locale.BUY_BAT, 50);
@@ -463,6 +471,14 @@ _windowManager = function () {
             listContent.push(group);
         }
 
+
+
+        let buttonSticker = context.add.sprite(0, 0, "sticker");
+        buttonSticker.scale.set(scaleRatio);
+
+        buttonSticker.x = container.width / 2 - buttonSticker.width / 2 + buttonGreen.width / 2 - 20 * scaleRatio;
+        buttonSticker.y = container.height / 2 - buttonSticker.height / 2 + 460 * scaleRatio;
+
         // draw list ----
         let slider = new phaseSlider(context);
         drawButtons();
@@ -499,6 +515,28 @@ _windowManager = function () {
 
             if(currentBatIndex < 0) currentBatIndex = 0;
 
+            arrowSticker.alpha = 0;
+            buttonSticker.alpha = 0;
+
+
+            // проверяем для следующего элемента
+            if(currentBatIndex + 1 < settingsBats.length)
+            {
+                for (let i = currentBatIndex + 1; i < settingsBats.length; i++)
+                {
+                    let stickerBat = settingsBats[i];
+
+                    // если следующий еще не видели, то рисуем стикер
+                    if(UserData.CurrentMoney() - stickerBat.price >= 0)
+                    {
+                        if(UserData.data.arrowStickersBats.indexOf(stickerBat.id) === -1)
+                        {
+                            arrowSticker.alpha = 1;
+                        }
+                    }
+                }
+            }
+
 
             let currBat = settingsBats[currentBatIndex];
             moneyText.text = currBat.price;
@@ -520,8 +558,14 @@ _windowManager = function () {
                     equipLabel.text = Settings.locale.EQUIP_BAT;
                     purchaseLabel.text = Settings.locale.Equip_bat;
                 }
+
                 moneyContainer.alpha = 0;
                 equipLabel.alpha = 1;
+
+                if(UserData.data.usesBats.indexOf(currBat.id) === -1){
+                    buttonSticker.alpha = 1;
+                }
+
             }else {
                 equipLabel.alpha = 0;
                 moneyContainer.alpha = 1;
@@ -530,6 +574,13 @@ _windowManager = function () {
                 if(UserData.CurrentMoney() - currBat.price >= 0)
                 {
                     buttonGreen.loadTexture("btn_green");
+                    // если следующий еще не видели, то рисуем стикер
+                    if(UserData.data.arrowStickersBats.indexOf(currBat.id) === -1)
+                    {
+                        UserData.data.arrowStickersBats.push(currBat.id);
+                        UserData.SaveData();
+                    }
+
                 }else{
                     buttonGreen.loadTexture("btn_violet");
                 }
@@ -542,6 +593,7 @@ _windowManager = function () {
         }
 
         container.addChild(buttonGreen);
+        container.addChild(buttonSticker);
         return container;
 
     };
@@ -700,6 +752,21 @@ _windowManager = function () {
         list_bg.x = container.width / 2 - list_bg.width / 2;
         list_bg.y = container.height / 2 - 300 * scaleRatio;
 
+
+        let arrowSticker = context.add.sprite(0,0,"sticker");
+        arrowSticker.scale.set(scaleRatio);
+        container.addChild(arrowSticker);
+        arrowSticker.x = container.width / 2 - arrowSticker.width / 2 + 340 * scaleRatio;
+        arrowSticker.y = container.height / 2 - arrowSticker.height / 2 - 200 * scaleRatio;
+
+
+
+        let buttonSticker = context.add.sprite(0, 0, "sticker");
+        buttonSticker.scale.set(scaleRatio);
+        container.addChild(buttonSticker);
+        buttonSticker.x = container.width / 2 - buttonSticker.width / 2 + button.width / 2 - 20 * scaleRatio;
+        buttonSticker.y = container.height / 2 - buttonSticker.height / 2 + 460 * scaleRatio;
+
         // draw list ----
         let slider = new phaseSlider(context);
         drawButtons();
@@ -731,7 +798,20 @@ _windowManager = function () {
             if(currentFieldIndex >= listContent.length) currentFieldIndex = listContent.length - 1;
             if(currentFieldIndex < 0) currentFieldIndex = 0;
 
+            // по умолчанию все скрываем
+            arrowSticker.alpha = 0;
+            buttonSticker.alpha = 0;
+
             let settingsField = settingsFields[currentFieldIndex];
+
+
+            for (let i = currentFieldIndex + 1; i < settingsFields.length; i++)
+            {
+                // если поле не у юзера, но может быть открыть и не просмотрено рисовать стикер
+                if(!UserData.ContainsField(settingsFields[i].id) && UserData.GetWinCounter() >= settingsFields[i].totalWins && UserData.data.viewFields.indexOf(settingsFields[i].id) === -1){
+                    arrowSticker.alpha = 1;
+                }
+            }
 
             nameLabel.text = settingsField.name;
 
@@ -742,11 +822,16 @@ _windowManager = function () {
             {
                 progress.alpha = 0;
                 progressTitle.alpha = 0;
+
+                if(UserData.data.usesFields.indexOf(settingsField.id) === -1)
+                    buttonSticker.alpha = 1;
+
             }else {
                 progressTitle.alpha = 1;
                 progress.alpha = 1;
                 progressText.text = UserData.GetWinCounter() + "/" + settingsField.totalWins;
                 mask.scale.set(fieldProgress , 1);
+
             }
 
             if(fieldProgress < 1 && !settingsField.starter && !UserData.ContainsField(settingsField.id))
@@ -764,6 +849,11 @@ _windowManager = function () {
                 buttonText.text = Settings.locale.EQUIP_FIELD;
                 buttonText.x = (button.width / 2) / scaleRatio;
                 buttonText.y = (button.height / 2) / scaleRatio;
+
+                // помечаем как просмотренное
+                if(UserData.data.viewFields.indexOf(settingsField.id) === -1)
+                    UserData.data.viewFields.push(settingsField.id);
+
             }
 
             // если плашка выбрана

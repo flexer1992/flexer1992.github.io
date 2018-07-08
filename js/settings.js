@@ -70,6 +70,8 @@ Settings.resources = {
     "main_btn_left": "asset/new_assets/main_menu_left.png",
     "main_btn_right": "asset/new_assets/main_menu_right.png",
 
+    "sticker": "asset/new_assets/blue_sticker.png",
+    "stickerMain": "asset/new_assets/notification.png",
 
     "btn_green": "asset/new_assets/btn_green_normal.png",
     "btn_green_big": "asset/new_assets/btn_green.png",
