@@ -78,6 +78,15 @@ _windowManager = function () {
             footer.y = windowContainer.height - footer.height;
         }
 
+        container.Close = function(){
+            shadow.inputEnabled = false;
+            container.destroy();
+            if(onClose != null)
+            {
+                onClose();
+            }
+        };
+
         return container;
     };
 
@@ -779,70 +788,61 @@ _windowManager = function () {
     };
 
     // показать окно гачи
-    this.ShowGatchaWindow = function(context){
+    this.ShowGatchaWindow = function(context, OnGetReward){
+        let container = this.GetBaseContainer(context, Settings.locale.GATCHA_TITLE, null, OnCLose, true);
 
-        var container = this.GetBaseContainer(context, "GATCHA!", null, OnCLose, true);
+        let buttonGreen = UiFactory.CreateButton(context, "btn_green", function() {
 
-        //share button
-        var button = UiFactory.CreateButton(context, "btn_blue", function() {
-            console.log("win this bat");
-        } );
+            // открываем
+            if(Gatcha.CanOpenBox())
+            {
+                console.log("get reward");
+                container.Close();
+                WindowManager.GatchaRewardWindow(context, Gatcha.Open(), OnGetReward);
+                Gatcha.SetCooldown();
+                UserData.SaveData();
+            }
+            else
+            {
 
-        var buttonText = UiFactory.CreateText(context, "Win this bat!", 60);
-        button.addChild(buttonText);
-        buttonText.x = button.width / 2;
-        buttonText.y = button.height / 2;
-        buttonText.setShadow(2, 2, 'rgba(0,0,0,1)', 0);
-        buttonText.fill = "#FFFFFF";
-
-        button.scale.set(scaleRatio);
-
-        button.x = (container.width - button.width) / 2;
-        button.y = container.height / 2 + 450 * scaleRatio;
-        container.addChild(button);
-
-        // restart button
-        var buttonWidth = 534;
-        var buttonHeight = 184;
-
-        var buttonGreen = UiFactory.CreateButton(context, "btn_green", function() {
-            console.log("buy this bat");
+                if(UserData.CurrentMoney() - Gatcha.GetSkipPrice() >= 0)
+                {
+                    //skip gatcha progress
+                    Gatcha.SkipBox();
+                }
+            }
         });
 
-        buttonGreen.width = buttonWidth;
-        buttonGreen.height = buttonHeight;
-
-
-
-        var buttonGreenText = UiFactory.CreateText(context, "Buy", 80);
-        buttonGreenText.fill = "#0C6E1B";
-        buttonGreen.addChild(buttonGreenText);
-
-        buttonGreenText.x = buttonGreen.width / 2 + 30;
-        buttonGreenText.y = buttonGreen.height / 2 - 40;
-
         // add money container
-        var moneyContainer = context.add.group();
-        var money_icon = context.add.sprite(0,0, "icon_coin");
+        let moneyContainer = context.add.group();
+        let money_icon = context.add.sprite(0,0, "icon_coin");
         moneyContainer.add(money_icon);
         money_icon.x = 0;
         money_icon.y = 0;
 
         // TODO передавать значение в текстовое поле что хотим отрисовать
-        var moneyText = context.add.text(0, 0, "2000", {font: "70px officina_sans", fill: "#FFFFFF"});
+        let moneyText = context.add.text(0, 0, "200", {font: "70px officina_sans", fill: "#FFFFFF"});
         moneyContainer.addChild(moneyText);
         moneyText.x = money_icon.width + 10;
         moneyText.y = moneyContainer.height / 2 - moneyText.height / 2;
 
         buttonGreen.addChild(moneyContainer);
         moneyContainer.x = buttonGreen.width / 2 - moneyContainer.width / 2;
-        moneyContainer.y = buttonGreen.height / 2 - 10;
+        moneyContainer.y = buttonGreen.height / 2 - moneyContainer.height / 2;
 
-        var InfoUserLabel = UiFactory.CreateText(context, "Choose your bat or buy new! \n Swipe left and right.", 50);
+
+
+        // TODO передавать значение в текстовое поле что хотим отрисовать
+        let getNowLabel = context.add.text(0, 0, Settings.locale.GetNowLabel, {font: "70px officina_sans", fill: "#FFFFFF"});
+        buttonGreen.addChild(getNowLabel);
+        getNowLabel.x = buttonGreen.width/ 2 - getNowLabel.width / 2;
+        getNowLabel.y = buttonGreen.height /2 - getNowLabel.height / 2;
+
+        var InfoUserLabel = UiFactory.CreateText(context, Settings.locale.GatchaText, 50);
         InfoUserLabel.fill = "#7C7CB0";
         InfoUserLabel.align = "center";
         InfoUserLabel.x = container.width / 2;
-        InfoUserLabel.y = container.height / 2 - 400 * scaleRatio;
+        InfoUserLabel.y = container.height / 2 - 340 * scaleRatio;
         InfoUserLabel.scale.set(scaleRatio);
 
         container.addChild(InfoUserLabel);
@@ -851,60 +851,123 @@ _windowManager = function () {
 
         var prizeImage = context.add.sprite(0,0, "gatcha_box");
         gatchaContainer.addChild(prizeImage);
+        prizeImage.x = gatchaContainer.width / 2 - prizeImage.width / 2;
+        container.addChild(gatchaContainer);
+        gatchaContainer.scale.set(scaleRatio);
+        gatchaContainer.x = container.width/2 - gatchaContainer.width / 2;
+        gatchaContainer.y = container.height / 2 - gatchaContainer.height / 2;
 
+        // draw progressx
+        let progress = context.add.group();
 
-        var progress = context.add.group();
-
-        var preloader_bg = context.add.sprite(0, 0, "prbar_bg");
+        let preloader_bg = context.add.sprite(0, 0, "prbar_bg");
         progress.addChild(preloader_bg);
 
-        var preloadBar = context.add.sprite(0, 0, "prbar_color");
+        let preloadBar = context.add.sprite(0, 0, "prbar_color");
         preloadBar.tint = 0x3f9dfc;
         progress.addChild(preloadBar);
 
-        gatchaContainer.addChild(progress);
+        container.addChild(progress);
 
-        progress.x = gatchaContainer.width / 2 - progress.width / 2;
-        progress.y = prizeImage.height;
-
-
-        prizeImage.x = gatchaContainer.width / 2 - prizeImage.width / 2;
-
-        container.addChild(gatchaContainer);
-
-        gatchaContainer.scale.set(scaleRatio);
-
-        gatchaContainer.x = container.width/2 - gatchaContainer.width / 2;
-        gatchaContainer.y = container.height / 2 - gatchaContainer.height / 2 - 100 * scaleRatio;
-
-        var mask = context.add.graphics(gatchaContainer.width / 2 + 40, gatchaContainer.y + prizeImage.height);
-        mask.beginFill(0xffffff);
-        mask.drawRect(0,0, preloadBar.width, preloadBar.height);
-        mask.endFill();
-        preloadBar.mask = mask;
-        mask.scale.set(0.2, 1);
-
-        var progressText = UiFactory.CreateText(context, "00:00:35", 50);
+        let progressText = UiFactory.CreateText(context, "00:00:35", 50);
         progressText.fill = "#FFFFFF";
         progressText.align = "center";
         progressText.x = progress.width / 2;
         progressText.y = progress.height / 2;
         progress.addChild(progressText);
 
-        var completeIcon = context.add.sprite(0,0, "");
+        progress.scale.set(scaleRatio);
+
+        progress.x = container.width / 2 - progress.width / 2;
+        progress.y = container.height / 2 + 200 * scaleRatio;
+
+
+        let mask = context.add.graphics(progress.x, progress.y);
+        mask.beginFill(0xffffff);
+        mask.drawRect(0,0, preloadBar.width * scaleRatio, preloadBar.height);
+        mask.endFill();
+        preloadBar.mask = mask;
+        mask.scale.set(0.2, 1);
+
+        // end draw progress
+
+
+        let completeIcon = context.add.sprite(0,0, "task_complete");
+        completeIcon.scale.set(scaleRatio);
+        container.addChild(completeIcon);
+
+        completeIcon.x = progress.x - completeIcon.width / 2;
+        completeIcon.y = mask.y + (progress.height / 2 - completeIcon.height / 2);
 
         container.addChild(buttonGreen);
 
         buttonGreen.scale.set(scaleRatio);
 
-        buttonGreen.width = buttonWidth * scaleRatio;
-        buttonGreen.height = buttonHeight * scaleRatio;
-
         buttonGreen.x = (container.width - buttonGreen.width) / 2;
-        buttonGreen.y = container.height / 2 + 200 * scaleRatio;
+        buttonGreen.y = container.height / 2 + 460 * scaleRatio;
+
+
+        let infoButton = UiFactory.CreateText(context, Settings.locale.SpeedUpLabel, 50);
+        infoButton.fill = "#7C7CB0";
+        infoButton.align = "center";
+        infoButton.x = container.width / 2;
+        infoButton.y = container.height / 2 + 340 * scaleRatio;
+        infoButton.scale.set(scaleRatio);
+
+        container.addChild(infoButton);
+
+        DrawProgress();
+
+        let interval = window.setInterval(function () {
+            DrawProgress();
+        }, 1000);
+
+
+
+        function DrawProgress(){
+            if(Gatcha.CanOpenBox())
+            {
+                // рисуем текст что ожем забрать
+                preloadBar.tint = 0x62D026;
+                completeIcon.alpha = 1;
+                mask.scale.set(1);
+                infoButton.text = Settings.locale.GetYoutGatchaReward;
+                progressText.text = Settings.locale.GetPrizeLabel;
+                moneyContainer.alpha = 0;
+                getNowLabel.alpha = 1;
+                buttonGreen.loadTexture("btn_green");
+            }
+            else
+            {
+                infoButton.text = Settings.locale.SpeedUpLabel;
+                preloadBar.tint = 0x3f9dfc;
+                completeIcon.alpha = 0;
+                progressText.text = Gatcha.GetTimeToEnd().toHHMMSS();
+                mask.scale.set((1 - (Gatcha.GetTimeToEnd() / Settings.gatcha.time)), 1);
+                moneyText.text = Gatcha.GetSkipPrice();
+                moneyContainer.alpha = 1;
+                getNowLabel.alpha = 0;
+                // TODO добавить проверку на наличие денег для скипа
+
+                if(UserData.CurrentMoney() - Gatcha.GetSkipPrice() >= 0)
+                {
+                    buttonGreen.loadTexture("btn_green");
+                }else{
+                    buttonGreen.loadTexture("btn_violet");
+                }
+            }
+
+            moneyText.x = money_icon.width + 10;
+            moneyText.y = moneyContainer.height / 2 - moneyText.height / 2;
+
+            moneyContainer.x = buttonGreen.width / 2 - moneyContainer.width / 2;
+            moneyContainer.y = buttonGreen.height / 2 - moneyContainer.height / 2;
+
+        }
 
         function OnCLose(){
             mask.destroy();
+            window.clearInterval(interval);
         }
 
         return container;
@@ -1037,6 +1100,89 @@ _windowManager = function () {
 
     };
 
+
+    this.GatchaRewardWindow = function(context, reward, OnClose){
+        let container = context.add.group();
+
+        let shadow = context.add.tileSprite(0, 0, context.width, context.height, 'field_biege');
+        shadow.tint = 0x2D3061;
+        shadow.alpha = 0.7;
+        shadow.inputEnabled = true;
+        container.addChild(shadow);
+
+        let buttonGreen = UiFactory.CreateButton(context, "btn_green", function() {
+            container.destroy();
+            if(reward.batId !== undefined)
+            {
+                if(!UserData.ContainsBat(reward.batId))
+                {
+                    UserData.AddBat(reward.batId);
+                }
+            }
+            else
+            {
+                UserData.AddMoney(reward.coins);
+            }
+            OnClose();
+        });
+
+        let getNowLabel = context.add.text(0, 0, Settings.locale.ClaimButton, {font: "70px officina_sans", fill: "#FFFFFF"});
+        buttonGreen.addChild(getNowLabel);
+        getNowLabel.x = buttonGreen.width/ 2 - getNowLabel.width / 2;
+        getNowLabel.y = buttonGreen.height /2 - getNowLabel.height / 2;
+
+        container.addChild(buttonGreen);
+        buttonGreen.scale.set(scaleRatio);
+        buttonGreen.x = container.width / 2 - buttonGreen.width / 2;
+        buttonGreen.y = container.height / 2 + 330 * scaleRatio;
+
+
+        let glow = context.add.sprite(0,0,"glow");
+        container.addChild(glow);
+        glow.scale.set(scaleRatio);
+        glow.anchor.set(0.5,0.5);
+        context.add.tween(glow).to({angle : 360}, 5000, Phaser.Easing.Linear.None, true,0,-1);
+
+        glow.x = container.width / 2 - glow.width / 4;
+        glow.y = container.height / 2 - glow.height / 2 + 50 * scaleRatio;
+
+
+        let title = context.add.text(0, 0, Settings.locale.ClaimTitle, {font: "80px officina_sans", fill: "#FFFFFF"});
+        container.addChild(title);
+        title.scale.set(scaleRatio);
+        title.x = container.width/2 - title.width/ 2;
+        title.y = container.height / 2 - 560 * scaleRatio;
+
+        let icon = context.add.sprite(0,0,"");
+
+        let rewardText= "";
+        if(reward.batId !== undefined)
+        {
+            let bat = UserData.GetBatWithId(reward.batId);
+            rewardText = bat.name;
+            icon.loadTexture(bat.icon);
+        }else {
+            rewardText = reward.coins + " GOLD!";
+            icon.loadTexture("gold2");
+        }
+
+        icon.scale.set(scaleRatio);
+        container.addChild(icon);
+        icon.x = container.width / 2 - icon.width/ 2;
+        icon.y = container.height / 2 - icon.height / 2 - 120 * scaleRatio;
+
+        // TODO либо имя либо колиество денег
+        let rewardLabel = context.add.text(0, 0, rewardText, {font: "80px officina_sans", fill: "#F8CB62"});
+        container.addChild(rewardLabel);
+        rewardLabel.scale.set(scaleRatio);
+        rewardLabel.x = container.width/2 - rewardLabel.width/ 2;
+        rewardLabel.y = container.height / 2 + 160 * scaleRatio;
+
+    };
+
 };
+
+
+
 
 let WindowManager = new _windowManager();

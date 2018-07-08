@@ -10,6 +10,8 @@ BasicGame.MainMenu = function (game) {
     this.moneyText = {};
     this.batImage = {};
     this.fieldImage = {};
+    this.interval = {};
+    this.gatchaTimer = {};
 
 };
 
@@ -22,6 +24,7 @@ BasicGame.MainMenu.prototype = {
         this.drawChooseButButton();
         this.createPlayButton();
         this.CreateGatchButton();
+        this.startInterval();
     },
 
     drawMoneyContainer : function()
@@ -192,7 +195,7 @@ BasicGame.MainMenu.prototype = {
     CreateGatchButton : function()
     {
         var gatchaButton = this.add.button(0,0, 'icon_prize', this.clickGatchaButton, this);
-        var text = this.add.text(0, 0, "Get Free!", {font: "70px officina_sans", fill: "#ffffff"});
+        let text = this.add.text(0, 0, "Get Free!", {font: "70px officina_sans", fill: "#ffffff"});
         text.anchor.set(0.5, 0.5);
         text.x = gatchaButton.width / 2;
         text.y = gatchaButton.height - text.height / 2;
@@ -205,11 +208,16 @@ BasicGame.MainMenu.prototype = {
         gatchaButton.x = this.world.width - gatchaButton.width - gatchaButton.width / 4;
         gatchaButton.y = this.world.height - gatchaButton.height - gatchaButton.height / 4;
 
+        this.gatchaTimer = text;
+        game.state.getCurrentState().self.drawGatchaTimer();
+
     },
 
     clickGatchaButton : function()
     {
-        var gatchaWindow = WindowManager.ShowGatchaWindow(this.game);
+        WindowManager.ShowGatchaWindow(this.game,function(){
+            game.state.getCurrentState().self.UpdateScreen();
+        });
     },
 
     startGame: function (btn) {
@@ -222,6 +230,36 @@ BasicGame.MainMenu.prototype = {
         console.log("selected skill :" + skill);
         window.destroy();
         UserData.SetCurrentSkill(skill);
+        game.state.getCurrentState().self.clearTimer();
         game.state.start('Game');
+
+    },
+
+    clearTimer : function(){
+        window.clearInterval(game.state.getCurrentState().self.interval)
+    },
+
+    startInterval : function(){
+        game.state.getCurrentState().self.interval = window.setInterval(this.tickInterval, 1000);
+    },
+
+    tickInterval : function(){
+        game.state.getCurrentState().self.drawGatchaTimer();
+    },
+
+    drawGatchaTimer : function(){
+        let timer = game.state.getCurrentState().self.gatchaTimer;
+
+        if(timer === undefined)
+            return;
+
+        if(Gatcha.CanOpenBox())
+        {
+            timer.text = Settings.locale.GET_FREE;
+        }else {
+            //draw timer
+            timer.text = Gatcha.GetTimeToEnd().toHHMMSS();
+        }
     }
+
 };

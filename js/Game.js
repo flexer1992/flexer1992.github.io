@@ -342,7 +342,7 @@ BasicGame.Game.prototype = {
                 winner : isPlayer,
                 yourScore : this.scoreR,
                 enemyScore : this.scoreL,
-                reward : isPlayer ? Settings.WIN_REWARD : 0,
+                reward : isPlayer ? Settings.winReward[UserData.GetCurrentSkill()] : 0,
                 OnClose : this.OnCloseResultWindow,
                 OnRestart : this.OnRestart,
                 OnRevange : this.OnRevange
@@ -382,9 +382,9 @@ BasicGame.Game.prototype = {
     // utility functions for the paddles *****************
     paddleGrab: function (pointer) {
 
-        var bodies = this.physics.p2.hitTest(pointer.position);
+        let bodies = this.physics.p2.hitTest(pointer.position);
 
-        if (bodies.length != 0){
+        if (bodies.length !== 0){
 
             if(bodies[0].parent.sprite !== this.playerSprite) return;
 

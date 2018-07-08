@@ -1,7 +1,7 @@
 var Settings = {};
 
 Settings.TIME_TO_NEW_PUCK = 5;  // время в секундах до пофвления нового шарика после забивания кем-то из игроков
-Settings.COUNT_TO_WIN = 6; // количество очков в игре всего
+Settings.COUNT_TO_WIN = 1; // количество очков в игре всего
 Settings.RESTITUTION = 0.3; // отскок любых тел от любых пока единственный физический параметр что мы можем регулировать
 
 // для настройки колайдеров в воротах
@@ -17,6 +17,7 @@ Settings.ENEMY_GATE_COLLIDER_OFFSET_X = 0;
 
 // реворд за победу
 Settings.WIN_REWARD = 30;
+Settings.winReward = [10,15,25,50];
 
 
 // текста тоже сюда наверное
@@ -41,6 +42,15 @@ Settings.locale.BUY_BAT = "Purchase bat";
 Settings.locale.Equip_bat = "Equip bat";
 Settings.locale.Equipped_bat = "Equipped bat";
 
+Settings.locale.GET_FREE = "Get Free!";
+Settings.locale.GATCHA_TITLE = "GATCHA!";
+Settings.locale.GatchaText = "You can wait your free \nchest or speed it up!";
+Settings.locale.SpeedUpLabel = "Speed Up Gatcha!";
+Settings.locale.GetYoutGatchaReward = "Claim Your reward!";
+Settings.locale.GetPrizeLabel = "GET PRIZE!";
+Settings.locale.GetNowLabel = "GET NOW!";
+Settings.locale.ClaimButton = "CLAIM!";
+Settings.locale.ClaimTitle = "YOUR REWARD:";
 
 // ресурсы что загружаются для использования в прелоадере
 // потом они шарятся везде
@@ -92,6 +102,18 @@ Settings.resources = {
     "wheel_bat_blue": "asset/new_assets/bats/wheel_bat_blue.png",
     "wheel_bat_red": "asset/new_assets/bats/wheel_bat_red.png",
 
+    "footbal_bat_blue": "asset/new_assets/bats/football_bat_blue.png",
+    "footbal_bat_red": "asset/new_assets/bats/football_bat_red.png",
+
+    "inyan_bat_blue": "asset/new_assets/bats/inyan_bat_blue.png",
+    "inyan_bat_red": "asset/new_assets/bats/inyan_bat_red.png",
+
+    "pool_bat_blue": "asset/new_assets/bats/pool_bat_blue.png",
+    "pool_bat_red": "asset/new_assets/bats/pool_bat_red.png",
+
+    "vinyl_bat_blue": "asset/new_assets/bats/vinyl_bat_blue.png",
+    "vinyl_bat_red": "asset/new_assets/bats/vinyl_bat_red.png",
+
     // pucks and fiends icons
     "basket_field" : "asset/new_assets/fields/basket_field.png",
     "classic_field" : "asset/new_assets/fields/classic_field.png",
@@ -115,13 +137,14 @@ Settings.resources = {
     "gold3" :  "asset/new_assets/gold3.png",
     "no_ads" :  "asset/new_assets/ads_free.png",
     "like_us" :  "asset/new_assets/like_us.png",
+    "glow" :  "asset/new_assets/glow.png",
 };
 
 Settings.bats = [
     {
         id: 1,
         icon: "hockey_bat_blue",
-        price: 1000,
+        price: 0,
         name: "default",
         isPlayer : true,
         enemyId : 2
@@ -129,56 +152,115 @@ Settings.bats = [
     {
         id: 2,
         icon: "hockey_bat_red",
-        price: 2000,
+        price: 0,
         name: "default red",
         isPlayer : false
     },
     {
         id: 3,
-        icon: "captn_bat_blue",
-        price: 999,
-        name: "captn blue",
-        isPlayer : true,
-        enemyId : 4
+        icon: "footbal_bat_blue",
+        price: 99,
+        name: "football blue",
+        isPlayer : false
     },
     {
         id: 4,
-        icon: "captn_bat_red",
-        price: 4000,
-        name: "captn red",
+        icon: "footbal_bat_red",
+        price: 99,
+        name: "football red",
         isPlayer : false
     },
     {
         id: 5,
-        icon: "donut_bat_blue",
-        price: 5000,
-        name: "donut blue",
-        isPlayer : true,
-        enemyId : 6
-    },
-    {
-        id: 6,
-        icon: "donut_bat_red",
-        price: 6000,
-        name: "donut red",
-        isPlayer : false
-    },
-    {
-        id: 7,
         icon: "wheel_bat_blue",
-        price: 7000,
+        price: 249,
         name: "wheel blue",
         isPlayer : true,
         enemyId : 8
     },
     {
-        id: 8,
+        id: 6,
         icon: "wheel_bat_red",
-        price: 8000,
+        price: 249,
         name: "wheel red",
         isPlayer : false
-    }
+    },
+    {
+        id: 7,
+        icon: "captn_bat_blue",
+        price: 599,
+        name: "captn blue",
+        isPlayer : true,
+        enemyId : 4
+    },
+    {
+        id: 8,
+        icon: "captn_bat_red",
+        price: 599,
+        name: "captn red",
+        isPlayer : false
+    },
+    {
+        id: 9,
+        icon: "vinyl_bat_blue",
+        price: 999,
+        name: "vinyl blue",
+        isPlayer : true,
+        enemyId : 6
+    },
+    {
+        id: 10,
+        icon: "vinyl_bat_red",
+        price: 999,
+        name: "vinyl red",
+        isPlayer : false
+    },
 
+    {
+        id: 11,
+        icon: "pool_bat_blue",
+        price: 1499,
+        name: "pool blue",
+        isPlayer : true,
+        enemyId : 6
+    },
+    {
+        id: 12,
+        icon: "pool_bat_red",
+        price: 1499,
+        name: "pool red",
+        isPlayer : false
+    },
+    {
+        id: 13,
+        icon: "donut_bat_blue",
+        price: 2499,
+        name: "donut blue",
+        isPlayer : true,
+        enemyId : 6
+    },
+    {
+        id: 14,
+        icon: "donut_bat_red",
+        price: 2499,
+        name: "donut red",
+        isPlayer : false
+    },
+    {
+        id: 13,
+        icon: "inyan_bat_blue",
+        price: 3499,
+        name: "inyan blue",
+        isPlayer : true,
+        enemyId : 6
+    },
+    {
+        id: 14,
+        icon: "inyan_bat_red",
+        price: 3499,
+        name: "inyan red",
+        isPlayer : false
+    }
 ];
 
 Settings.fields = [
@@ -189,7 +271,7 @@ Settings.fields = [
         fieldColor: "#f5f5eb",
         linesColor: 0xD62D20,
         dotColor: 0xe5e3d6,
-        totalWins : 10, // количество побед для возможности открытия
+        totalWins : 1, // количество побед для возможности открытия
         puck : "puck",
         starter : true
     },
@@ -200,44 +282,219 @@ Settings.fields = [
         fieldColor: "#96c54b",
         linesColor: 0xD62D20,
         dotColor: 0xbbef67,
-        totalWins : 20, // количество побед для возможности открытия
+        totalWins : 5, // количество побед для возможности открытия
         puck : "puck_soccer"
     },
+
     {
         id: 3,
-        name: "Neon",
-        icon: "neon_field",
-        fieldColor: "#3e3b68",
-        linesColor: 0xD62D20,
-        dotColor: 0x6960ba,
-        totalWins : 30, // количество побед для возможности открытия
-        puck : "puck_neon"
-    },
-    {
-        id: 4,
-        name: "Basketball",
-        icon: "basket_field",
-        fieldColor: "#d3823b",
-        linesColor: 0xffffff,
-        dotColor: 0xc2722b,
-        totalWins : 40, // количество побед для возможности открытия
-        puck : "puck_basket"
-    },
-    {
-        id: 5,
         name: "Ice",
         icon: "ice_field",
         fieldColor: "#7bbcff",
         linesColor: 0xD62D20,
         dotColor: 0x8fc6ff,
-        totalWins : 50, // количество побед для возможности открытия
+        totalWins : 20, // количество побед для возможности открытия
         puck : "puck_hockey"
+    },
+    {
+        id: 4,
+        name: "Neon",
+        icon: "neon_field",
+        fieldColor: "#3e3b68",
+        linesColor: 0xD62D20,
+        dotColor: 0x6960ba,
+        totalWins : 50, // количество побед для возможности открытия
+        puck : "puck_neon"
+    },
+    {
+        id: 5,
+        name: "Basketball",
+        icon: "basket_field",
+        fieldColor: "#d3823b",
+        linesColor: 0xffffff,
+        dotColor: 0xc2722b,
+        totalWins : 100, // количество побед для возможности открытия
+        puck : "puck_basket"
     }
 ];
 
 Settings.gatcha = {
-    time : 3600, // время в секундах
-    //intervals
+    time : 28800, // время в секундах
+    intervals : [
+        {
+            max : 28800,
+            min : 25260,
+            price : 49
+        },
+        {
+            max : 25259,
+            min : 21660,
+            price : 45
+        },
+        {
+            max : 21659,
+            min : 18060,
+            price : 39
+        },
+        {
+            max : 18059,
+            min : 14460,
+            price : 35
+        },
+        {
+            max : 14459,
+            min : 10860,
+            price : 29
+        },
+        {
+            max : 10859,
+            min : 7260,
+            price : 25
+        },
+        {
+            max : 7259,
+            min : 3660,
+            price : 15
+        },
+        {
+            max : 3659,
+            min : 0,
+            price : 5
+        }
+    ],
+
+    reward : [
+        {
+            skip : [
+                {
+                    batId : 3,
+                    weight : 0.1
+                },
+                {
+                    coins : 50,
+                    weight : 0.3
+                },
+                {
+                    coins : 100,
+                    weight : 0.5
+                }
+            ],
+            always : [
+                {
+                    batId : 3,
+                    weight : 0.1
+                },
+                {
+                    coins : 25,
+                    weight : 0.9
+                },
+                {
+                    coins : 50,
+                    weight : 0.2
+                }
+            ]
+
+        },
+        {
+            skip : [
+                {
+                    batId : 3,
+                    weight : 0.6
+                },
+                {
+                    batId : 5,
+                    weight : 0.1
+                },
+                {
+                    coins : 115,
+                    weight : 0.2
+                }
+            ],
+            always : [
+                {
+                    batId : 3,
+                    weight : 0.8
+                },
+                {
+                    coins : 35,
+                    weight : 0.2
+                },
+                {
+                    coins : 50,
+                    weight : 0.3
+                }
+            ]
+
+        },
+        {
+            skip : [
+                {
+                    batId : 5,
+                    weight : 0.5
+                },
+                {
+                    coins : 115,
+                    weight : 0.6
+                }
+            ],
+            always : [
+                {
+                    batId : 5,
+                    weight : 0.1
+                },
+                {
+                    coins : 50,
+                    weight : 0.9
+                }
+            ]
+
+        },
+        {
+            skip : [
+                {
+                    coins : 100,
+                    weight : 0.6
+                },
+                {
+                    coins : 150,
+                    weight : 0.3
+                }
+            ],
+            always : [
+                {
+                    batId : 5,
+                    weight : 0.6
+                },
+                {
+                    coins : 75,
+                    weight : 0.3
+                }
+            ]
+
+        },
+        {
+            skip : [
+                {
+                    coins : 150,
+                    weight : 0.6
+                },
+                {
+                    coins : 175,
+                    weight : 0.1
+                }
+            ],
+            always : [
+                {
+                    coins : 100,
+                    weight : 0.5
+                },
+                {
+                    coins : 150,
+                    weight : 0.3
+                }
+            ]
+        }
+    ]
 
 };
 
