@@ -4,10 +4,10 @@ userData = function userData() {
     this.data = {
         bats : [1],
         defaulBat : 1,
-        money : 1000,
+        money : 10,
         fields : [1],
         currentField : 1,
-        winsCount : 5, //TODO убрать
+        winsCount : 0, //TODO убрать
         currentSkill : 0,
         gatcha : {
             countOpen : 0, // количество открытий
