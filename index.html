@@ -1,40 +1,90 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Partymasters</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=640 height=1136 style="width: 640px; height: 1136px; background: #231F20"></canvas>
-    <script src="Build/PartyMasterRC.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Partymasters</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        /* Убираем выделение по нажатию клавиш */
+        canvas:focus {
+            outline: none;
+        }
+        
+        /*html, body {*/
+        /*    !* Убираем отступы *!*/
+        /*    padding: 0;*/
+        /*    margin: 0;*/
+        /*    !* Отключаем скролл и лонгтап на IOS *!*/
+        /*    overflow: hidden;*/
+        /*    -webkit-touch-callout: none;*/
+        /*    -webkit-user-select: none;*/
+        /*    -khtml-user-select: none;*/
+        /*    -moz-user-select: none;*/
+        /*    -ms-user-select: none;*/
+        /*    user-select: none;*/
+        /*    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
+        /*    !* Ставим высоту на 100% *!*/
+        /*    height: 100%;*/
+        /*}*/
+
+    </style>
+
+</head>
+<body style="text-align: center; padding: 0; border: 0; margin: 0;">
+<canvas id="unity-canvas" width=640 height=1136 style="width: 640px; height: 1136px; background: #231F20"></canvas>
+<script src="Build/PartyRC.loader.js"></script>
+<script>
+
+    const buildUrl = "Build";
+
+    const loaderUrl = buildUrl + "/PartyRC.loader.js";
+    const config = {
+        dataUrl: buildUrl + "/PartyRC.data.unityweb",
+        frameworkUrl: buildUrl + "/PartyRC.framework.js.unityweb",
+        codeUrl: buildUrl + "/PartyRC.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Playgendary",
+        productName: "Partymasters",
+        productVersion: "1.4",
+    };
+
+    const canvas = document.querySelector("#unity-canvas")
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
 
-        var canvas = document.querySelector("#unity-canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
         canvas.style.position = "fixed";
 
         document.body.style.textAlign = "left";
-      }
+    }
 
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/PartyMasterRC.data.unityweb",
-        frameworkUrl: "Build/PartyMasterRC.framework.js.unityweb",
-        codeUrl: "Build/PartyMasterRC.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Playgendary",
-        productName: "Partymasters",
-        productVersion: "1.4",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      });
-    </script>
-  </body>
+    const script = document.createElement("script");
+
+    script.src = loaderUrl;
+
+    script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+            console.log("progress" + progress);
+        }).then((unityInstance) => {
+            console.log("onloaded");
+            window.Telegram.WebApp.ready();
+        }).catch((message) => {
+            alert(message);
+        });
+    };
+
+    document.body.appendChild(script);
+</script>
+</body>
 </html>
