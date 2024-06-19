@@ -14,7 +14,7 @@
         canvas:focus {
             outline: none;
         }
-        
+
         /*html, body {*/
         /*    !* Убираем отступы *!*/
         /*    padding: 0;*/
@@ -75,7 +75,7 @@
 
     script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-            console.log("progress" + progress);
+        
         }).then((unityInstance) => {
             console.log("onloaded");
             window.Telegram.WebApp.ready();
