@@ -3,15 +3,14 @@ destinationPath=$2
 
 echo $sourcePath
 echo $destinationPath;
+
 cd $sourcePath
 
 # shellcheck disable=SC2045
 for entry in $(ls $sourcePath)
 do
   cp $sourcePath"/"$entry $destinationPath"/"$entry
-  echo $entry
 done
-
 
 cd $destinationPath
 git status
