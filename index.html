@@ -82,7 +82,7 @@
             console.log("onloaded");
             window.Telegram.WebApp.ready();
             MyGameInstance = unityInstance;
-            MyGameInstance.SendMessage("WebAppBridge", "TestMessage", "Hi, I calld you from index.html!!!");
+            MyGameInstance.SendMessage('WebAppBridge', 'TestMessage', 'Hi, I calld you from index.html!!!');
         }).catch((message) => {
             alert(message);
         });
