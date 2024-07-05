@@ -17,5 +17,3 @@ git status
 git add -A
 git commit -m "deploy commit"
 git push origin main
-
-
