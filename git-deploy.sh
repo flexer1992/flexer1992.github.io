@@ -15,5 +15,6 @@ done
 cd $destinationPath
 git status
 git add -A
+git add -f Build
 git commit -m "deploy commit"
 git push origin main
