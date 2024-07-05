@@ -9,7 +9,7 @@ cd $sourcePath
 # shellcheck disable=SC2045
 for entry in $(ls $sourcePath)
 do
-  cp -r $sourcePath"/"$entry $destinationPath"/"$entry
+  cp -r $sourcePath"/"$entry $destinationPath
 done
 
 cd $destinationPath
