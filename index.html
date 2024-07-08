@@ -14,59 +14,34 @@
         canvas:focus {
             outline: none;
         }
-
-        /*html, body {*/
-        /*    !* Убираем отступы *!*/
-        /*    padding: 0;*/
-        /*    margin: 0;*/
-        /*    !* Отключаем скролл и лонгтап на IOS *!*/
-        /*    overflow: hidden;*/
-        /*    -webkit-touch-callout: none;*/
-        /*    -webkit-user-select: none;*/
-        /*    -khtml-user-select: none;*/
-        /*    -moz-user-select: none;*/
-        /*    -ms-user-select: none;*/
-        /*    user-select: none;*/
-        /*    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
-        /*    !* Ставим высоту на 100% *!*/
-        /*    height: 100%;*/
-        /*}*/
-
+        
     </style>
 
 </head>
 <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-<canvas id="unity-canvas" width=640 height=1136 style="width: 640px; height: 1136px; background: #231F20"></canvas>
-<!--<script src="Build/PartyRC.loader.js"></script>-->
+<div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas"></canvas>
+</div>
 <script>
-
     const buildUrl = "Build";
 
-    const loaderUrl = buildUrl + "/PartyRC.loader.js";
+    const loaderUrl = buildUrl + "/PartyRC1.loader.js";
     const config = {
-        dataUrl: buildUrl + "/PartyRC.data.unityweb",
-        frameworkUrl: buildUrl + "/PartyRC.framework.js.unityweb",
-        codeUrl: buildUrl + "/PartyRC.wasm.unityweb",
+        dataUrl: buildUrl + "/PartyRC1.data.unityweb",
+        frameworkUrl: buildUrl + "/PartyRC1.framework.js.unityweb",
+        codeUrl: buildUrl + "/PartyRC1.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Playgendary",
         productName: "Partymasters",
         productVersion: "1.4",
     };
 
+    const container = document.querySelector("#unity-container");
     const canvas = document.querySelector("#unity-canvas")
 
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
-
-        document.body.style.textAlign = "left";
+        container.className = "unity-mobile";
+        config.devicePixelRatio = 1.6;
     }
 
     const script = document.createElement("script");
