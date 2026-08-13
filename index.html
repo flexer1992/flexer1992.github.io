@@ -1,69 +1,96 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Partymasters</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CppStarter</title>
     <style>
-        /* Убираем выделение по нажатию клавиш */
-        canvas:focus {
-            outline: none;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
         }
-        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        #status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-family: sans-serif;
+            font-size: 18px;
+            text-align: center;
+        }
+        #errors {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: red;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 90%;
+            max-height: 40%;
+            overflow: auto;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            display: none;
+        }
     </style>
-
 </head>
-<body style="text-align: center; padding: 0; border: 0; margin: 0;">
-<div id="unity-container" class="unity-desktop">
-    <canvas id="unity-canvas"></canvas>
-</div>
-<script>
-    const buildUrl = "Build";
+<body>
+    <div id="status">Loading...</div>
+    <canvas id="canvas" tabindex="1"></canvas>
+    <div id="errors"></div>
+    <script>
+        var Module = {
+            canvas: document.getElementById('canvas'),
+            setStatus: function(text) {
+                var status = document.getElementById('status');
+                if (!status) return;
+                if (text && String(text).indexOf('Running') !== -1) {
+                    status.style.display = 'none';
+                    return;
+                }
+                status.textContent = text;
+            },
+            onRuntimeInitialized: function() {
+                var status = document.getElementById('status');
+                if (status) status.style.display = 'none';
+                console.log("Runtime initialized");
 
-    const loaderUrl = buildUrl + "/PartyRC1.loader.js";
-    const config = {
-        dataUrl: buildUrl + "/PartyRC1.data.unityweb",
-        frameworkUrl: buildUrl + "/PartyRC1.framework.js.unityweb",
-        codeUrl: buildUrl + "/PartyRC1.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Playgendary",
-        productName: "Partymasters",
-        productVersion: "1.4",
-    };
-
-    const container = document.querySelector("#unity-container");
-    const canvas = document.querySelector("#unity-canvas")
-
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        config.devicePixelRatio = 1.6;
-    }
-
-    const script = document.createElement("script");
-
-    script.src = loaderUrl;
-
-    var MyGameInstance = null;
-
-    script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-
-        }).then((unityInstance) => {
-            console.log("onloaded");
-            window.Telegram.WebApp.ready();
-            MyGameInstance = unityInstance;
-            MyGameInstance.SendMessage('WebAppBridge', 'TestMessage', 'Hi, I calld you from index.html!!!');
-        }).catch((message) => {
-            alert(message);
-        });
-    };
-
-    document.body.appendChild(script);
-</script>
+                // Check WebGL context after runtime is ready
+                var canvas = document.getElementById('canvas');
+                if (canvas) {
+                    canvas.focus({ preventScroll: true });
+                    canvas.addEventListener('pointerdown', function () {
+                        canvas.focus({ preventScroll: true });
+                    }, { passive: true });
+                    var gl = canvas.getContext('webgl2');
+                    if (gl) {
+                        console.log("WebGL2 context obtained");
+                        console.log("GL Version:", gl.getParameter(gl.VERSION));
+                        console.log("GL Renderer:", gl.getParameter(gl.RENDERER));
+                        console.log("GL Vendor:", gl.getParameter(gl.VENDOR));
+                    } else {
+                        gl = canvas.getContext('webgl');
+                        if (gl) {
+                            console.log("WebGL1 context obtained (fallback)");
+                        } else {
+                            console.error("No WebGL context available!");
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="CppStarterWeb.js"></script>
 </body>
 </html>
